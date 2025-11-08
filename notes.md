@@ -319,3 +319,288 @@ Contextualizar o HTTP nas camadas da Internet;
 Caracterizar o que é o HTTP, e quais os seus principais componentes;
 Identificar a arquitetura das comunicações utilizando HTTP.
 
+#08/11/2025
+
+@02-Aprendendo sobre URLs
+
+@@01
+Entendendo URLs
+
+Transcrição
+
+Olá! Estamos mais familiarizados com o projeto e como ele se estrutura em termos de arquitetura, como clientes e servidor, trocando mensagens HTTP, e seguindo as regras dos protocolos.
+Agora vamos analisar um pouco as diferentes páginas que podemos acessar usando HTTP e comos nos referimos a cada página específica.
+
+Acessando o navegador no endereço localhost:3000, estamos na aplicação AluraBooks. Aproveitando que já realizamos um cadastro, clicamos em "Login" no canto superior direito. Será exibida uma janela com o título "Login" e os campos "E-mail" e "Senha", abaixo temos um botão "Fazer login".
+
+Dados que o instrutor preencheu para realizar o login:
+E-mail: geo@alura.com.br
+Senha: 123
+Após clicarmos no botão "Fazer login", somos redirecionados para a página inicial, mas perceba que agora no canto superior direito ao invés de "Login" agora está escrito "Minha conta".
+
+E se desejamos compartilhar a página do AluraBooks para um amigo? Ou até mesmo compartilhar a nossa página de perfil, clicando em "Minha conta". Precisamos nomear essas páginas, com um nome que qualquer pessoa entenda e consiga colocar no navegador, e buscar por elas. Mas como nomeamos as páginas?
+
+Dar nome às páginas
+Em 1991, o Tim Berners-Lee estava descobrindo o que usamos atualmente como web. E ele estava com essa mesma dúvida: como nomear páginas específicas?
+
+Por exemplo:
+
+Página da maria
+https://twitter.com/maria
+Vamos supor que uma amiga nossa chamada de Maria decidiu montar uma página. Ela pode colocar apenas "página da maria" ou precisará de mecanismos mais estruturados para nomear essa página e posteriormente se referir a ela para localizá-la?
+
+URL (Uniform Resource Locator)
+A resposta obviamente é que precisamos de um mecanismo padronizado, chamamos esse mecanismo de URL (Uniform Resource Locator, em português "Localizador de Recursos Universal").
+
+O localizador nos permite acessar os recursos, que podem ser arquivos HTML, imagens, scripts de JavaScript que carregamos nas páginas, etc. É universal porque, como aprendemos, essas páginas podem ser carregadas em aplicações web, dispositivos móveis, servidor e desktop.
+
+É na URL que nomeamos as páginas.
+Vamos analisar o seguinte exemplo do nosso projeto
+
+https://localhost:3000/
+Compreenderemos as divisões da URL: o http delimita qual o protocolo utilizado para acessar a página. Nesse caso é o http, mas há outros, como o FTP (File Transfer Protocol) ou SSH (Secure Shell).
+
+O //localhost:3000 é a parte que determina o servidor e qual a porta que a página web está disponível. No nosso caso é o localhost (computador do instrutor) na porta 3000.
+
+Por fim, temos a barra / que representa o caminho (raiz), ou seja, onde está o recurso dentro de determinado servidor. Ao colocarmos a barra, geralmente é o primeiro recurso, a página principal do web site.
+
+Composição da URL:
+http: Protocolo
+//localhost:3000: sendo "localhost" o servidor e 3000 a porta que a página web está disponível
+/: caminho (raiz)
+Portanto, a partir da URL https://localhost:3000/ conseguimos carregar a página inicial que está no meu servidor localhost na porta 3000, usando o protocolo HTTP.
+
+Vamos usar esse conhecimento sobre URLs para entender um pouco mais sobre como funciona os domínios, e como podemos estruturar e criar novas páginas no sistema web que estamos desenvolvendo.
+
+@@02
+Identificando o protocolo
+ PRÓXIMA ATIVIDADE
+
+Acabamos de aprender que URLs são utilizadas para definir, de forma padronizada, como localizar um recurso (como um website ou um arquivo) na Internet. Além disso, vimos que a URL tem um formato padronizado, onde uma parte determina o protocolo, a outra o servidor, e assim por diante. Nesse contexto, analise a URL abaixo:
+smb://server/download/videos/http.mp4COPIAR CÓDIGO
+Como se chama o protocolo usado nesta URL?
+
+smb
+ 
+O protocolo especificado na URL se chama smb (aquilo que vem antes do ://), é a abreviação de Server Message Block. Ele é utilizado para compartilhar arquivos dentro de uma rede local.
+Nesse curso, não iremos necessariamente usar outros protocolos, tais como o smb. No entanto, é importante saber que URLs podem ser usadas por vários protocolos diferentes, o que as torna muito úteis na prática.
+Alternativa incorreta
+http
+ 
+Nesse caso não usamos o protocolo http.
+Alternativa incorreta
+ftp
+ 
+Alternativa incorreta, embora o protocolo ftp exista, nesse caso ele não é utilizado. Ele significa File Transfer Protocol e é utilizado para enviar arquivos entre computadores na Internet.
+
+@@03
+Recursos na URL
+ PRÓXIMA ATIVIDADE
+
+Continuando nosso aprofundamento sobre URLs, vamos relembrar: vimos que os caminhos de uma URL também podem ser chamados de "recursos". Com isso em mente, analise a URL a seguir:
+https://cursos.alura.com.br/course/introducao-html-cssCOPIAR CÓDIGO
+Qual é o nome do recurso usado nessa URL?
+
+cursos.alura
+ 
+Alternativa incorreta
+/course/introducao-html-css
+ 
+O recurso é aquilo que vem depois do nome do servidor.
+Falando nisso, uma curiosidade: No início da web, os recursos, na grande maioria, eram arquivos com a extensão .html ou .htm. Até hoje existem vários recursos que são arquivos na web. Mas reparem que a Alura não funciona dessa maneira. Em nenhum momento você acessa um arquivo na Alura. Por exemplo, para ver um curso, você usa a URL (:
+https://cursos.alura.com.br/course/introducao-html-cssCOPIAR CÓDIGO
+Perceba que não tem a extensão .html. Isso é um pouco mais legível e possui a vantagem que a URL não diz nada a respeito do formato. A URL não fica amarrada ao formato HTML.
+Alternativa incorreta
+http
+
+@@04
+Para saber mais: URI ou URL?
+ PRÓXIMA ATIVIDADE
+
+Muitas vezes, desenvolvedores usam a sigla URI (Uniform Resource Identifier) quando falam de endereços na web. Alguns preferem URL (Uniform Resource Locator), e alguns misturam as duas siglas à vontade. Há uma certa confusão no mercado a respeito e mesmo desenvolvedores experientes não sabem explicar a diferença. Então, qual é a diferença?
+Resposta 1 (fácil): Uma URL é uma URI. No contexto do desenvolvimento web, ambas as siglas são válidas para falar de endereços na web. As siglas são praticamente sinônimos e são utilizadas dessa forma.
+
+Resposta 2 (mais elaborada): Uma URL é uma URI, mas nem todas as URI's são URL's! Existem URI's que identificam um recurso sem definir o endereço, nem o protocolo. Em outras palavras, uma URL representa uma identificação de um recurso (URI) através do endereço, mas nem todas as identificações são URL's.
+
+Humm ... ficou claro? Não? Vamos dar um exemplo! Existe um outro padrão que se chama URN (Uniform Resource Name). Agora adivinha, os URN's também são URI's! Um URN segue também uma sintaxe bem definida, algo assim urn:cursos:alura:course:introducao-html-css. Repare que criamos uma outra identificação do curso Introdução ao HTML e CSS da Alura, mas essa identificação não é um endereço.
+
+alt: Diagrama horizontal com duas partes que representa a estrutura de uma URI, da esquerda para a direita: um quadro vermelho indicado como URL com o conteúdo “https://www.alura.com.br/course/introducao-html-css”, e, ao lado, outro quadro em verde indicado como URN com “urn:alura:coure:introducao-html-css”.
+
+Novamente, a resposta 2 vai muito além do que você realmente precisa no dia a dia. Normalmente URL e URI são usados como sinônimos.
+
+@@05
+Acessando diferentes portas
+
+Transcrição
+
+Aprendemos como são formados os endereços das URLs, que usamos para acessar os recursos na web através do protocolo HTTP. Agora vamos focar em uma parte das URLs: as portas.
+Acessando o navegador no endereço localhost:3000, estamos no nosso projeto AluraBooks. Já aprendemos que o número 3000 é a porta onde a página web está disponível. Mas vamos abrir uma nova aba e acessar o site da Alura .
+
+Endereço do site da Alura: https://www.alura.com.br/
+Compare as duas URLs. Observe que não temos o número da porta no endereço de site da plataforma da Alura. Isso acontece porque a maioria dos sites já utilizam uma porta padronizada, que já está especificada no padrão do HTTP, sendo a porta de número 80. Se adicionarmos o número 80 no endereço da Alura, funciona da mesma forma.
+
+https://www.alura.com.br:80COPIAR CÓDIGO
+Mas observe que após teclarmos "Enter", mesmo funcionando o navegador removeu a porta 80 do endereço, estamos somente com alura.com.br. Isso ocorre por ser a porta padrão mesmo, e não precisamos ficar exibindo no endereço.
+
+Mas não temos somente a porta 80 como padrão:
+
+Portas padrão
+Número da(s) porta(s)	Padrão
+80	HTTP
+443	HTTPS
+de 1023 até 65535	Livres para uso
+portas entre 0 e 1023 são reservadas para serviços padronizados.
+Nas portas livres para uso, estamos usando a 3000 no nosso front-end, e no back-end usamos a porta de número 8000. Usamos essas portão, então, para não influenciar as portas padrão, e para permitir a execução de mais de um servidor no mesmo computador simultaneamente.
+
+Por fim, essas portas com número maior nos fazem perceber mais facilmente que estamos trabalhando no** ambiente de desenvolvimento**. Ou seja: o nosso projeto AluraBooks ainda não está pronto, estamos desenvolvendo na nossa máquina local.
+
+Neste vídeo, aprendemos sobre as portas padrão e sobre como podemos configurar as portas. Na sequência, vamos entender mais sobre os domínios.
+
+Até mais!
+
+https://www.alura.com.br/
+
+https://www.alura.com.br/
+
+@@06
+Porta padrão HTTP
+ PRÓXIMA ATIVIDADE
+
+Aprendemos que os protocolos, como o HTTP, podem utilizar portas padronizadas, para simplificar a construção de URL. Sabendo disso, confira a URL abaixo:
+http://www.alura.com.brCOPIAR CÓDIGO
+Qual é a porta utilizada?
+
+8080
+ 
+Alternativa incorreta
+3000
+ 
+Alternativa incorreta
+443
+ 
+Alternativa incorreta
+80
+ 
+Ela pode ser omitida do endereço pois é a porta padrão do HTTP.
+
+@@07
+Entendendo domínios
+
+Transcrição
+
+Já aprendemos bastante sobre URLs, e entendemos detalhes sobre as portas. Agora vamos compreender melhor a parte do servidor.
+localhost:3000
+Acessando a nossa aplicação pelo navegador no endereço localhost:3000, temos o nosso servidor como sendo o localhost (nome de domínio de onde estamos acessando o servidor) e a porta 3000.
+
+Se acessarmos, por exemplo, o site google.com é outro nome de domínio, que conseguimos acessar de forma direta sem a necessidade de informar a porta (por ser padrão). Mas, e se colocássemos um endereço IP?
+
+Endereço IP usado pelo instrutor:
+http://142.251.128.14
+Colando o endereço IP acima na barra de endereço do navegador e teclando "Enter", somos redirecionados para a página google.com.
+
+O que será que aconteceu para um endereço IP virar o nome do site?
+
+Sistema de Nomes de Domínios (DNS)
+Site	IP
+google.com	142.251.128.14
+Todo computador precisa de um endereço IP para se conectar à internet. Entretanto, imagine se tivéssemos que ficar decorando endereços IPs de cada servidor conectado para acessarmos um site. O do Google, por exemplo, é o IP 142.251.128.14. Portanto, o DNS associa esse IP a um nome mais fácil de lembrarmos.
+
+Os servidores DNS transformam requisições de nomes em endereços IP, isso para que a pessoa usuária consiga acessar a página web esperada quando digitar o nome de domínio no navegador web.
+Domínios
+O que são esses domínios?
+
+Fazendo uma analogia, por exemplo, o Brasil é um domínio territorial por ser uma região administrativa que possui suas regras. Cada país é um domínio separado.
+
+Na web, cada site, ou sistema, ou empresa possui seu próprio domínio, sendo onde tudo é controlado. Por exemplo, todos os sistemas da Alura estão sobre o domínio de alura.com.br; já o Google, está no domínio google.com e o nosso servidor local está em localhost. Este significa que o domínio funciona somente dentro do nosso computador.
+
+Há domínios globais e domínios locais. Um exemplo de domínio global é o da Alura e do Google, já o domínio local é o nosso localhost.
+
+Como funciona o DNS
+Temos um servidor DNS que possui uma tabela grande, onde há uma coluna com o nome dos sites (domínios) e outra com os IPs relacionados aos domínios.
+
+Site	IP
+google.com	142.251.128.14
+alura.com.br	172.67.72.232
+…	…
+Assim, toda vez que a pessoa acessar um site usando o HTTP, ela precisa saber qual o IP do servidor para que esse acesso seja efetivo. Dessa forma, perguntamos ao servidor DNS qual o IP, por exemplo, do domínio google.com e temos como retorno o 142.251.128.14. Com o endereço IP, a pessoa estabelece uma comunicação HTTP da forma como já aprendemos anteriormente.
+
+Podemos fazer alguns testes relacionados a como descobrir o endereço IP.
+
+No terminal, rodamos um programa através do comando nslookup google.com.
+
+nslookup google.com
+Como retorno, obtemos:
+
+Server: 8.8.8.8
+Address: 8.8.8.8#53
+
+Non-authoritative answer:
+
+Name: google.com
+
+Address: 142.251.128.14
+
+Temos como retorno o nome do domínio e o endereço IP associado a ele. Podemos usar esse comando, portanto, para descobrir qual o endereço IP de determinado domínio.
+
+Imagine o tamanho da tabela que esse servidor DNS precisa ter para saber todos os sites do mundo, e o tempo de busca e leitura do endereço IP que está associado ao domínio. Isso está relacionado à performance e também à administração.
+
+DNS é hierárquico
+Para simplificar, o DNS é feito de uma forma hierárquica em formato de árvore. Quando acessamos algo .com.br ou .org, significa que são o primeiro nível dos nomes dos sites. Inicia-se da raiz (nível mais abstrato) que é para ter um ponto de onde começar, e a partir disso vamos descendo os níveis. Chamamos esse nível de top-level domains (TLD) (em português, "domínios de nível superior").
+
+Descendo para os sub-domínios, temos os domínios da alura, g1 e fiap, por exemplo, alura.com.br e do Google ficaria apenas google.com. Esse mecanismo hierárquico permite uma busca mais rápida por usarmos uma árvore.
+
+Além disso, facilita na administração, por exemplo, por sabermos que tudo que contém br está relacionado ao Brasil. Assim, é possível alocar essa parte dos domínios para ser administrada por uma entidade brasileira. Isso seria para cada país, assim eles conseguem gerenciar os seus domínios específicos.
+
+Organograma hierárquico de DNS. O organograma possui formato de árvore e possui dois níveis de domínios: top-level domains(TLD) posicionados no topo e sub-domínios posicionados logo abaixo. No topo de top-level domain temos "raíz" que se conecta a 4 outros domínios: "com", "br", "org", "net". O domínio "com" se conecta ao subdomínio "google", enquanto o domínio "br" se conecta aos subdomínios "com", "gov", "edu". Já o sub-domínio "com" se conecta a outros subdomínios, exemplificados como "alura", "g1" e "fiap"
+
+Composição da URL:
+http: Protocolo
+//localhost: Endereço IP ou Nome de domínio.
+:3000/: caminho (raiz)
+Portanto, na parte do servidor podemos usar tanto o endereço IP quanto o nome de domínio para acessar as páginas HTTP.
+
+@@08
+O que é um domínio na Internet?
+ PRÓXIMA ATIVIDADE
+
+Falamos bastante sobre o domínio nessa aula, mas o que é um domínio (ou domain name) e qual a sua importância?
+
+Domínio é permitir uma conexão segura com o site Web de forma que o servidor garante a integridade do serviço. Falamos que o serviço foi acessado de forma dominante.
+ 
+Alternativa incorreta
+O domínio é o nome do site na Web. Ele facilita a navegação do usuário, que não precisa lembrar o IP de cada site.
+ 
+O domínio é o nome do site na web e serve para facilitar a navegação do usuário, que precisa lembrar apenas do nome do site, e não do seu endereço IP.
+Alternativa incorreta
+O domínio é o endereço que digitamos no navegador para acessar o site. Para isso, precisamos registrá-lo no servidor de domínios do Google.
+ 
+Alternativa incorreta
+Domínios eram uma forma primordial de acesso à Internet antes da popularização dos navegadores modernos. Atualmente não são mais usados e o comum é acessar pelo nome de acesso (Access Name).
+
+@@09
+Como funciona o DNS?
+ PRÓXIMA ATIVIDADE
+
+Qual é o objetivo ou a função do DNS (Domain Name System ou servidor de domínios)?
+
+O DNS serve para transferir arquivos pela internet de forma rápida e versátil.
+ 
+Alternativa incorreta
+O DNS é um protocolo usado no acesso remoto a uma caixa de correio eletrônico.
+ 
+Alternativa incorreta
+O DNS tem como função realizar a tradução do nome de um domínio para o endereço de IP correspondente.
+ 
+O DNS realiza a tradução do nome de um domínio para o endereço de IP. Existem vários servidores DNS no mundo e é fundamental para a nossa web o funcionamento deles.
+Alternativa incorreta
+O DNS é usado para permitir o acesso seguro em redes inseguras, sendo muito usado para realizar o acesso remoto em outros computadores.
+
+@@10
+O que aprendemos?
+ PRÓXIMA ATIVIDADE
+
+Nessa aula, você a aprendeu a:
+Identificar uma URL e entender o seu papel no protocolo HTTP;
+Configurar URLs para utilizar: protocolos, domínios, portas, e caminhos específicos;
+Utilizar a porta padrão nas URLs com o protocolo HTTP;
+Usar nomes de domínios (ao invés de endereços IP) para acessar diferentes sites na Web.
