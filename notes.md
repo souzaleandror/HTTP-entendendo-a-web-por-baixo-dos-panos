@@ -1258,3 +1258,259 @@ Verificar que as mensagens HTTP são divididas em cabeçalho e corpo da mensagem
 Depurar os métodos HTTP usando o Postman, permitindo ler e criar recursos no backend do AluraBooks;
 Configurar cabeçalhos em requisições para o backend, permitindo o acesso a conteúdos que exigem que o usuário esteja logado;
 Depurar os códigos de resposta HTTP, os quais são divididos em classes, tais como como 2xx (sucesso) e 4xx (erro do cliente).
+
+#09/11/2025
+
+@04-Protegendo a Web com HTTPS
+
+@@01
+Preparando o ambiente
+ PRÓXIMA ATIVIDADE
+
+Nesta aula vamos utilizar o comando openssl, que permite, entre outras coisas, gerar chaves privadas e certificados digitais. Existem algumas recomendações específicas para o uso desse comando, dependendo do sistema operacional que você usar. Confira a seguir como utilizar o comando openssl no Linux, MacOS e Windows.
+Linux
+Caso você esteja no Linux, o openssl deverá estar disponível no gerenciador de pacotes da sua distribuição. Por exemplo, para instalar no Ubuntu ou no Debian, faça:
+
+sudo apt install opensslCOPIAR CÓDIGO
+MacOS
+No MacOS, basta usar o brew para realizar a instalação:
+
+brew install opensslCOPIAR CÓDIGO
+Windows
+No Windows, será necessário baixar o executável, instalar manualmente e configurar a variável Path para que o openssl fique disponível no prompt de comando.
+
+Siga as instruções:
+
+Baixe o programa Win64 OpenSSL v3.1.0 Light EXE;
+Execute o instalador baixado:
+Note que umas das telas irá mostrar o diretório de instalação; anote esse diretório. Por exemplo, no meu caso é C:\Program Files\OpenSSL-Win64.
+Após a instalação, abra o Painel de Controle e pesquise por variáveis de ambiente;
+Selecione a opção Editar as variáveis de ambiente para sua conta;
+Na caixa Variáveis de usuário, clique na variável Path, em seguida em Editar;
+Na nova janela que abrirá, clique em Novo e cole o caminho para o binário do openssl. Por exemplo, no meu caso é C:\Program Files\OpenSSL-Win64\bin;
+Note que precisamos adicionar o diretório bin no final.
+Clique em Ok para fechar as janelas e abra uma nova janela do cmd;
+Digite openssl version para verificar que funcionou.
+
+https://slproweb.com/products/Win32OpenSSL.html
+
+@@02
+Protegendo nossa aplicação com HTTPS
+
+Transcrição
+
+Até aqui, já exercitamos bastante como fazer login e requests usando o Postman. É importante que a nossa aplicação esteja segura, especialmente ao fazermos o login. Seria muito ruim se alguém descobrisse o nosso login e senha.
+Para simularmos uma situação em que um hacker entra na nossa rede e intercepta os requests HTTP, usaremos um programa chamado Wireshark. O Wireshark observará tudo o que passa pela rede do nosso computador. Assim, simularemos um ataque hacker.
+
+Abriremos o Wireshark e selecionaremos a interface Loopback. Esta é a interface que roda apenas no meu computador. Iniciarei a captura clicando no primeiro botão no menu superior.
+
+Ao iniciá-la, diversos logs aparecerão. Por isso, é melhor usarmos um filtro para selecionarmos apenas a porta TCP número 8000. Para isso, digitaremos "tcp.port == 8000 && http" no campo de texto exibido no topo da interface e pressionaremos a tecla "Enter" em seguida. Agora, os requests só aparecerão quando feitos no Postman.
+
+Ao abrir o Postman, veremos um request montado (o mesmo usado para fazer login), pertencente ao método "Post": http://localhost:8000/public/login. O corpo da mensagem é composto pelo e-mail e pela senha. Ao clicarmos no botão "Send", receberemos a resposta "200 OK" logo abaixo da primeira caixa de texto do Postman. Logo abaixo, será exibido o token de acesso.
+
+Voltando ao Wireshark, descobriremos se ele conseguiu capturar o request. Observaremos duas linhas na parte de cima da janela: uma delas é o request (POST /public/login)
+
+Podemos observar os detalhes na metade inferior da tela, especialmente na aba à direita. Descendo até o fim do texto, encontraremos um JSON com o nosso e-mail e senha.
+
+Com isso, percebemos que o Wireshark conseguiu capturar o protocolo de texto e ler o seu conteúdo. Desse modo, temos uma falha de segurança no projeto. Para resolvê-la, introduziremos a versão segura do HTTP: o HTTPS.
+
+Para realizar essa modificação, o primeiro passo é gerar uma entidade e uma chave de criptografia para o nosso site. Faremos isso digitando o seguinte comando no Terminal, na pasta "api-alurabooks", e pressionando a tecla "Enter" em seguida:
+
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt
+Usaremos o OpenSSL, um programa que trabalha com criptografia. Ele será usado para gerar tanto a chave privada do servidor quanto o certificado do servidor, ou seja, a sua identidade.
+
+Depois disso, o Terminal pedirá algumas informações, como o nome do país (Country Name), o estado (State or Province Name), a cidade (Locality Name), o nome da organização (Organization Name), o departamento (Organizational Unit Name), um nome comum (Common Name) e o endereço de e-mail (Email Address).
+
+Pularei algumas informações, preenchendo apenas o nome do país ("BR") e o nome da organização ("AluraBooks"). Usaremos o comando "ls" para observar que foram criados os arquivos "server.key" e "server.crt".
+
+Com isso, já temos as informações necessárias para proteger os dados. Precisamos implementar então o código responsável por essa proteção. Para isso, acessaremos o VS Code, onde já está aberta a pasta "api-alurabooks", e abriremos o arquivo "server.js".
+
+Nele, importaremos o módulo de HTTP digitando const https = require('https') no topo do código, logo abaixo dos outros const do arquivo.
+
+Agora, precisamos envelopar o conteúdo do servidor nesse novo módulo HTTPS. Assim, desceremos até o fim do código, antes de o servidor começar o processo de listening na porta 8000. Pressionaremos a tecla "Enter" logo abaixo da linha server.use(router) para abrir espaço.
+
+Digitaremos https.createServer({}). Dentro das chaves ({}), inseriremos os parâmetros para passar os arquivos que acabamos de criar no terminal. O primeiro é a chave privada (server.key) que precisa ser lida, o segundo, o certificado (server.crt). O resultado é o seguinte:
+
+https.createServer(
+    {
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.crt')
+    },
+)COPIAR CÓDIGO
+Em seguida, passaremos a variável server usada para fazer o listen como um parâmetro para o módulo de HTTPS. Por fim, mudamos o último trecho de código, retirando o server do trecho que faz o listen. Em vez disso, quem fará esse processo é o próprio https.createServer().
+
+Podemos também modificar a mensagem do console.log para indicar que a API agora estará disponível em https:
+
+https.createServer(
+    {
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.crt')
+    },
+    server
+).listen(8000, () => {
+    console.log("API disponível em https://localhost:8000")
+})COPIAR CÓDIGO
+Salvaremos as alterações e voltaremos ao Terminal, na aba de execução da API e pressionaremos o atalho "Ctrl + C" para pausar a execução. Em seguida, executaremos novamente usando o comando "npm run start-auth". A mensagem exibida no Terminal será:
+
+API disponível em https://localhost:8000
+Agora, abriremos o Postman e, se tentarmos fazer um request, obteremos um erro. Isso acontece porque ainda não mudamos de "http" para "https". Corrigiremos esse problema atualizando o endereço para "https://localhost:8000/public/login". Clicaremos em "Send" e obteremos um token de acesso que utiliza o HTTPS.
+
+Em seguida, verificaremos se o Wireshark conseguiu capturar as informações transmitidas via HTTPS. Com o filtro usado, estamos vendo apenas as atividades com HTTP. O Wireshark não nos permite filtrar por HTTPS porque ele usa um protocolo chamado TLS, que corresponde à segurança da camada de transporte sobre o TCP.
+
+Por esse motivo, atualizaremos a barra de texto no topo do Wireshark para "tcp.port == 8000 && tls". Ao fazer isso, ele exibirá as mensagens enviadas de maneira criptografada, com o HTTPS que habilitamos.
+
+As mensagens enviadas são as que contêm o texto "Application Data" na coluna "Info". Ao selecionar uma delas, observe que já não é mais possível compreender boa parte do seu conteúdo. No canto inferior direito, perceberemos que os dados estão criptografados.
+
+Neste vídeo, habilitamos o HTTPS com sucesso e demonstrar que ele deixa as nossas páginas mais seguras. Até mais!
+
+@@03
+Faça como eu fiz: configurando o HTTPS no seu backend
+ PRÓXIMA ATIVIDADE
+
+A melhor forma de assimilar os conteúdos que você acabou de assistir é reproduzi-los na prática!
+Então vamos lá, começando pela configuração do nosso backend de modo seguro.
+
+Para gerar o certificado digital, usamos o seguinte comando:
+
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crtCOPIAR CÓDIGO
+Não esqueça que o comando deve ser executado na mesma pasta do seu backend.
+
+Já para habilitar o HTTPS, vamos modificar o arquivo server.js.
+
+No topo do arquivo, adicionamos:
+
+const https = require("https")COPIAR CÓDIGO
+Depois, modificamos a linha que inicia o servidor:
+
+https.createServer({
+  key: fs.readFileSync('server.key'),
+  cert: fs.readFileSync('server.crt')
+}, server).listen(8000, () => {
+   console.log("API disponível em https://localhost:8000")
+})COPIAR CÓDIGO
+Agora, quando você executar o backend, ele estará com o HTTPS ativado.
+
+Opinião do instrutor
+
+Obs.: caso você queira testar a segurança com o Wireshark, como foi feito no vídeo, esse é o link para o download do programa.
+Lembrando que usar o Wireshark é opcional, já que o nosso foco principal é aprender sobre o protocolo HTTP.
+
+https://www.wireshark.org/download.html
+
+@@04
+Para saber mais: certificado digital
+ PRÓXIMA ATIVIDADE
+
+Quando precisamos informar nossos dados a algum servidor, queremos ter certeza que este servidor realmente representa a entidade em questão. Queremos confiar em quem estamos fornecendo nossos dados!
+Um certificado digital prova uma identidade para um site, onde temos informações sobre o seu domínio e a data de expiração desse certificado. Além disso, o certificado ainda guarda a chave pública que é utilizada para criptografar (cifrar) os dados que são trafegados entre cliente e servidor.
+
+Vamos conferir como isso funciona na prática, no próximo vídeo.
+
+@@05
+Entendendo certificados e chaves privadas
+
+Transcrição
+
+Acabamos de aprender a proteger as nossas mensagens utilizando o protocolo HTTPS. Agora, garantimos que o nosso usuário e a nossa senha não serão interceptados na rede.
+Relembrando que usamos o módulo https do Node.js para criar um servidor seguro. Seus parâmetros são uma chave privada (server.key) e um certificado (server.crt).
+
+Para compreender que arquivos são esses, abriremos o Terminal na pasta "api-alurabooks". Se digitarmos "ls" e pressionarmos a tecla "Enter", poderemos identificar o certificado e a chave, "server.crt" e "server.key" respectivamente:
+
+README.md package-lock.json server.js usuarios.json
+database.json package.json server.key
+node_modules server.crt thumbnail.png
+Podemos inspecionar o conteúdo destes arquivos usando o comando "cat". Este comando imprimirá na tela o conteúdo de cada arquivo inspecionado. Para inspecionar o certificado, escreveremos no Terminal "cat server.crt".
+
+No caso do certificado, surge uma sequência de letras e números ininteligíveis. Existe outro comando baseado no programa OpenSSL capaz de decodificar o conteúdo do certificado. Assim, digitaremos "openssl x509 -in server.crt -text" no Terminal e pressionaremos a tecla "Enter".
+
+O resultado exibe a versão do certificado, seu número serial e outras informações, como o país ("BR") e a organização que criamos para o certificado ("AluraBooks"). Também aparece a chave pública ("Public-Key") e a assinatura gerada para o certificado ("Signature Algorithm").
+
+Para inspecionar a chave, usaremos o comando "openssl rsa -in server.key -text -noout" e pressionaremos a tecla "Enter". A mensagem exibida nos mostra que se trata de uma chave privada ("Private-Key") de 2048 bits que usa o RSA. Esta sigla diz respeito ao algoritmo de criptografia que pode ser utilizado com essa chave. Na sequência, poderemos observar alguns parâmetros específicos e diversas sequências de números e letras.
+
+Para compreender melhor como o certificado e a chave privada são utilizados, usaremos uma analogia. Imagine que você trabalha na modalidade presencial e precisa acessar o prédio onde fica a sede da empresa.
+
+Para fazer isso, você apresenta o seu documento de identidade para uma autoridade que verifica quem pode entrar. Uma vez dentro do prédio, você usa uma chave para abrir a porta do escritório de trabalho.
+
+É importante dizer que você jamais faria uma cópia da chave do seu escritório para entregar a um amigo ou amiga, por exemplo. Essa pessoa não tem autorização para entrar no seu escritório, pois ela poderia encontrar informações sensíveis lá que não lhe dizem respeito.
+
+A chave e o certificado usados no nosso projeto funcionam de maneira similar: no lugar do documento de identidade, usamos um Certificado Digital. Trata-se de um documento com informações da sua API, sendo elas a identidade da organização, a chave pública e a assinatura digital.
+
+O servidor mostra o Certificado Digital para o cliente em um processo de autenticação. Além disso, também contamos com uma chave privada que o servidor usa para proteger os dados. Esta chave nunca deixa o servidor, assim como não fazemos uma cópia da chave física do escritório.
+
+Se essa chave deixasse o servidor, outros clientes poderiam descriptografá-la e descobrir os dados de outras pessoas.
+
+Para recapitular, até aqui aprendemos como funciona a arquitetura do HTTP, formada por um cliente e um servidor que trocam mensagens entre si em formato de texto.
+
+Estas mensagens estão protegidas com HTTPS, graças a uma chave privada que fica no servidor Back-End e a um certificado enviado para o cliente. O cliente também possui uma chave privada para criptografar os dados. No entanto, essa chave privada do cliente não tem um nome específico, pois uma chave nova é gerada para cada conexão utilizada.
+
+Uma vez que servidor e cliente trocam as informações necessárias, eles conseguem criptografar os dados. O cliente envia os dados que, antes de serem transmitidos pela rede, passam por um algoritmo de criptografia. O servidor recebe e descriptografa esses dados. Na hora de enviar uma resposta, esta também é criptografada e recebida pelo cliente.
+
+Acabamos de abordar como proteger os nossos dados com HTTPS e falamos do papel das chaves privadas e dos certificados digitais. Espero que você esteja gostando do curso. Na próxima aula, aprenderemos a usar os parâmetros no HTTP e a configurar o formato dos dados enviados no corpo da mensagem. Até mais!
+
+@@06
+Características do HTTPS
+ PRÓXIMA ATIVIDADE
+
+Aprendemos que o HTTPS permite a troca de mensagens HTTP de forma segura, e vimos na prática que ele realmente esconde, por exemplo, a nossa senha de potenciais ataques na rede.
+Nesse contexto, sobre as características do HTTPS, selecione todas as opções abaixo que estejam corretas:
+
+A chave privada fica apenas no lado do servidor.
+ 
+Exato, a chave privada é utilizada para descriptografar os dados que foram criptografados com a chave pública, por isso ela é importante e deve ficar apenas em posse do servidor.
+Alternativa correta
+HTTP significa usar um certificado digital do servidor.
+ 
+Alternativa correta
+O certificado prova a identidade e tem validade.
+ 
+Correto, todo certificado tem uma data validade e serve para provar a identidade entre o cliente e o servidor.
+Alternativa correta
+O certificado guarda a chave pública.
+ 
+Perfeito, é no certificado digital que encontramos a chave pública utilizada para criptografar os nossos dados.
+Parabéns, você acertou!
+
+@@07
+Certificado digital e chave privada
+ PRÓXIMA ATIVIDADE
+
+Ao habilitar o HTTPS no projeto AluraBooks, nós configuramos o backend, que utiliza NodeJS. Para isso, nós modificamos o código para carregar dois arquivos: o certificado digital e a chave privada.
+Sobre esse assunto, selecione a alternativa correta:
+
+Se fôssemos configurar o servidor do frontend, precisaríamos configurar apenas o certificado digital.
+ 
+Alternativa incorreta
+A chave privada configurada no nosso servidor nunca deve ser compartilhada, pois se isso acontecesse a segurança do nosso sistema seria comprometida.
+ 
+Correto, o próprio nome já diz: a chave deve permanecer privada.
+Alternativa incorreta
+Se estivéssemos utilizando qualquer outra linguagem no nosso backend, como o Python, não precisaríamos configurar o certificado e a chave privada.
+ 
+Alternativa incorreta
+Se o nosso servidor usar HTTPS, ele estará 100% seguro.
+
+@@08
+Para saber mais: as chaves do HTTPS
+ PRÓXIMA ATIVIDADE
+
+Aprendemos no vídeo que o HTTPS usa uma chave pública e uma chave privada. As chaves estão ligadas matematicamente, o que foi cifrado pela chave pública só pode ser decifrado pela chave privada. Isso garante que os dados cifrados pelo navegador (chave pública) só podem ser lidos pelo servidor (chave privada). Como temos duas chaves diferentes envolvidas, esse método de criptografia é chamado de criptografia assimétrica. No entanto, a criptografia assimétrica tem um problema, ela é lenta.
+alt: Diagrama horizontal com duas partes, da esquerda para a direita: um quadro azul com um ícone de chave amarela com o nome “chave pública” que é indicada no navegador e, ao lado, outro quadro em azul com um ícone de chave branca com o nome “chave privada” que é indicada no servidor.
+
+Por outro lado, temos a criptografia simétrica, que usa a mesma chave para cifrar e decifrar os dados, como na vida real, onde usamos a mesma chave para abrir e fechar a porta. A criptografia simétrica é muito mais rápida.
+
+alt: Diagrama horizontal com duas partes, da esquerda para a direita: um quadro azul com um ícone de chave verde com o nome “chave” que é indicada no navegador e, ao lado, outro quadro em azul com um ícone de chave verde com o nome “chave” que é indicada no servidor.
+
+Agora, o interessante é que o HTTPS usa ambos os métodos de criptografia, assimétrica e simétrica. Como assim? Muita calma, tudo o que aprendemos é verdade! Só faltou o grande final :)
+
+No certificado, vem a chave pública para o cliente utilizar, certo? E o servidor continua na posse da chave privada, ok? Isso é seguro, mas lento e por isso o cliente gera uma chave simétrica ao vivo. Uma chave só para ele e o servidor com o qual está se comunicando naquele momento! Essa chave exclusiva (e simétrica) é então enviada para o servidor utilizando a criptografia assimétrica (chave privada e pública) e então é utilizada para o restante da comunicação.
+
+Então, HTTPS começa com criptografia assimétrica para depois mudar para criptografia simétrica. Essa chave simétrica será gerada no início da comunicação e será reaproveitada nas requisições seguintes. Bem-vindo ao mundo fantástico do HTTPS :)
+
+@@09
+O que aprendemos?
+ PRÓXIMA ATIVIDADE
+
+Nessa aula, você a aprendeu a:
+Utilizar a ferramenta Wireshark para verificar que o HTTP estava expondo dados sensíveis (usuário e senha);
+Configurar o backend para habilitar o HTTPS, a versão segura do HTTP que faz com que os dados sejam criptografados antes do envio;
+Caracterizar o que são certificados digitais e chaves públicas, peças fundamentais para permitir a segurança dos nossos websites através do HTTPS.
