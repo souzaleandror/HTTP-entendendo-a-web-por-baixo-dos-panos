@@ -1,5 +1,13 @@
 #08/11/2025
 
+
+```
+cd curso-react-alurabooks
+npm start
+cd api-alurabooks
+npm run start-auth
+```
+
 Curso de HTTP: entendendo a web por baixo dos panos
 
 @01-Conhecendo o protocolo HTTP 
@@ -374,7 +382,6 @@ Vamos usar esse conhecimento sobre URLs para entender um pouco mais sobre como f
 
 @@02
 Identificando o protocolo
- PRÓXIMA ATIVIDADE
 
 Acabamos de aprender que URLs são utilizadas para definir, de forma padronizada, como localizar um recurso (como um website ou um arquivo) na Internet. Além disso, vimos que a URL tem um formato padronizado, onde uma parte determina o protocolo, a outra o servidor, e assim por diante. Nesse contexto, analise a URL abaixo:
 smb://server/download/videos/http.mp4COPIAR CÓDIGO
@@ -395,7 +402,6 @@ Alternativa incorreta, embora o protocolo ftp exista, nesse caso ele não é uti
 
 @@03
 Recursos na URL
- PRÓXIMA ATIVIDADE
 
 Continuando nosso aprofundamento sobre URLs, vamos relembrar: vimos que os caminhos de uma URL também podem ser chamados de "recursos". Com isso em mente, analise a URL a seguir:
 https://cursos.alura.com.br/course/introducao-html-cssCOPIAR CÓDIGO
@@ -415,7 +421,6 @@ http
 
 @@04
 Para saber mais: URI ou URL?
- PRÓXIMA ATIVIDADE
 
 Muitas vezes, desenvolvedores usam a sigla URI (Uniform Resource Identifier) quando falam de endereços na web. Alguns preferem URL (Uniform Resource Locator), e alguns misturam as duas siglas à vontade. Há uma certa confusão no mercado a respeito e mesmo desenvolvedores experientes não sabem explicar a diferença. Então, qual é a diferença?
 Resposta 1 (fácil): Uma URL é uma URI. No contexto do desenvolvimento web, ambas as siglas são válidas para falar de endereços na web. As siglas são praticamente sinônimos e são utilizadas dessa forma.
@@ -464,7 +469,6 @@ https://www.alura.com.br/
 
 @@06
 Porta padrão HTTP
- PRÓXIMA ATIVIDADE
 
 Aprendemos que os protocolos, como o HTTP, podem utilizar portas padronizadas, para simplificar a construção de URL. Sabendo disso, confira a URL abaixo:
 http://www.alura.com.brCOPIAR CÓDIGO
@@ -561,7 +565,6 @@ Portanto, na parte do servidor podemos usar tanto o endereço IP quanto o nome d
 
 @@08
 O que é um domínio na Internet?
- PRÓXIMA ATIVIDADE
 
 Falamos bastante sobre o domínio nessa aula, mas o que é um domínio (ou domain name) e qual a sua importância?
 
@@ -579,7 +582,6 @@ Domínios eram uma forma primordial de acesso à Internet antes da popularizaç�
 
 @@09
 Como funciona o DNS?
- PRÓXIMA ATIVIDADE
 
 Qual é o objetivo ou a função do DNS (Domain Name System ou servidor de domínios)?
 
@@ -597,10 +599,662 @@ O DNS é usado para permitir o acesso seguro em redes inseguras, sendo muito usa
 
 @@10
 O que aprendemos?
- PRÓXIMA ATIVIDADE
 
 Nessa aula, você a aprendeu a:
 Identificar uma URL e entender o seu papel no protocolo HTTP;
 Configurar URLs para utilizar: protocolos, domínios, portas, e caminhos específicos;
 Utilizar a porta padrão nas URLs com o protocolo HTTP;
 Usar nomes de domínios (ao invés de endereços IP) para acessar diferentes sites na Web.
+
+#09/10/2025
+
+@03-Inspecionando o protocolo HTTP
+
+@@01
+Preparando o ambiente
+
+Para os próximos vídeos, vamos usar o telnet, uma ferramenta poderosa e versátil que é usada há décadas por pessoas desenvolvedoras e administradoras de sistemas para se conectar a servidores remotos e executar comandos.
+Habilitando o telnet no Windows 10 e 11
+
+O Windows 10 e 11 já vêm com o telnet instalado, porém é preciso habilitá-lo. Para isso, siga os passos abaixo:
+
+1- Pressione a tecla Windows do seu teclado e digite "Painel de Controle"
+
+Insira aqui a descrição dessa imagem para ajudar na acessibilidade
+
+2- Clique na opção "Programas" (caso esteja vendo por categorias)
+
+Insira aqui a descrição dessa imagem para ajudar na acessibilidade
+
+3- Clique na opção "Ativar ou Desativar recursos do Windows"
+
+Insira aqui a descrição dessa imagem para ajudar na acessibilidade
+
+4 - Depois marque o checkbox "Telnet Client"
+
+Insira aqui a descrição dessa imagem para ajudar na acessibilidade
+
+Para testar, abra o prompt de comandos do Windows e digite telnet. Se deu tudo certo, você vai ver a mensagem "bem-vindo ao cliente telnet". Pode fechar a janela de comandos.
+
+Usando o telnet no Windows
+
+O telnet no Windows não possui uma interface muito amigável, por exemplo, por padrão ele não mostra na tela o que a gente digita, e causa timeouts sem razão aparente.
+
+Por esse motivo, nós preparamos as seguintes instruções, que permitem que os testes que serão demonstrados nos vídeos posteriores sejam executados no Windows também.
+
+Preparar, em um arquivo de texto, a mensagem HTTP que você quer enviar;
+Abrir o cmd do windows (note que é diferente do powershell, mingw ou cygwin);
+Digitar telnet localhost 8000;
+Copiar a mensagem HTTP inteira que está no arquivo de texto (não coloque mais de uma mensagem no mesmo arquivo);
+Colar na janela do telnet;
+Clicar “enter” duas vezes.
+Com esse setup, você deverá conseguir realizar as requisições HTTP pelo telnet no Windows.
+
+Instalando o telnet no Mac
+
+O Mac e o Linux não vêm com o telnet instalado por padrão. Para instalar, siga as etapas abaixo:
+
+Mac
+1- Abra o Terminal.
+
+2- Digite o seguinte comando:
+
+brew install telnet
+COPIAR CÓDIGO
+Pressione Enter.
+O telnet será instalado. Para testar, abra o Terminal e digite o seguinte comando:
+
+telnet localhost 8000
+COPIAR CÓDIGO
+Se deu tudo certo, você vai ver a mensagem "Welcome to telnet". Pode fechar a janela do Terminal.
+
+Instalando o telnet no Linux
+1- Abra o Terminal.
+
+2- Digite o seguinte comando:
+
+sudo apt-get install telnet
+COPIAR CÓDIGO
+3- Pressione Enter.
+
+O telnet será instalado. Para testar, abra o Terminal e digite o seguinte comando:
+
+telnet localhost 8000
+COPIAR CÓDIGO
+Se deu tudo certo, você vai ver a mensagem "Welcome to telnet". Pode fechar a janela do Terminal.
+
+A mensagem HTTP será enviada para o servidor. Você pode ver a resposta do servidor na janela do Terminal.
+
+Espero que isso ajude!
+
+@@02
+Ativando o modo hacker
+
+Transcrição
+
+Nesta aula, vamos colocar alguns conceitos em prática! Primeiramente, relembraremos o que fizemos até agora.
+Recapitulando
+Nós usamos o Chrome junto do JavaScript como um cliente HTTP, acessando nosso servidor do back-end e do front-end. Na aba de inspeção do navegador, mais especificamente na aba "Network" (Rede), analisamos informações obtidas de requisições.
+
+Ao longo das aulas, descobrimos que o HTTP é um protocolo de textos. No entanto, apenas consultado os logs obtidos da requisição nessa aba, não temos certeza se são textos ou se o Chrome que está os organizando dessa forma.
+
+Então, vamos introduzir uma nova ferramenta, chamada telnet, responsável por criar conexão TCP com outros servidores.
+
+Telnet
+Criaremos uma conexão TCP com back-end e o TCP será usado pelo HTTP para transportar as mensagens. Abriremos o telnet no terminal e digitaremos as mensagens HTTP como um cliente, semelhante ao navegador. A diferença é que o navegador realiza esse processo automaticamente, mas nós escreveremos as mensagens manualmente com telnet.
+
+Em uma aba do terminal, temos o back-end rodando. Em outra aba, vamos usar o comando do telnet, passando como parâmetro o domínio e a porta:
+
+telnet localhost 8000COPIAR CÓDIGO
+Connected to localhost.
+Em seguida, vamos fazer uma request, escrevendo o conteúdo da requisição HTTP.
+
+GET / HTTP/1.1COPIAR CÓDIGO
+O "GET" indica a obtenção de um conteúdo, a barra define que o conteúdo é da página inicial e o "HTTP/1.1" é o nome do protocolo, seguido da versão.
+
+Pressionado "Enter" duas vezes, a resposta do servidor começa com HTTP/1.1 200 OK e uma série de configurações, que não precisamos nos atentar, por enquanto. Depois, temos todo o código HTML usado para renderizar a página inicial do AluraBooks.
+
+Ou seja, fizemos uma requisição HTTP manualmente, usando o telnet! Na sequência, vamos realizar uma requisição um pouco mais interessante.
+
+Na página inicial do AluraBooks, na parte superior direita, podemos clicar no botão "Login" e inserir nossos dados cadastrados no sistema:
+
+E-mail: geo@alura.com.br Senha: 123
+Pressionando o botão "Fazer login", entraremos no sistema, usando o protocolo HTTP. A seguir, vamos explorar como realizar a mesma ação com o telnet.
+
+No terminal, podemos executar o comando clear para limpar a tela. Em seguida, abriremos uma nova sessão de telnet novamente:
+
+telnet localhost 8000COPIAR CÓDIGO
+E enviaremos a seguinte requisição:
+
+POST /public/login HTTP/1.1
+Content-Type: application/json
+Content-length: 45
+
+{"email": "geo@alura.com.br", "senha": "123"}COPIAR CÓDIGO
+Dessa vez, informamos que estamos enviando um JSON e que o tamanho da requisição é de 45 bytes. Além disso, mandamos um JSON com dados de login.
+
+Analisando o retorno, reparamos que a requisição foi bem-sucedida. A resposta em texto do servidor começa novamente com HTTP/1.1 200 OK e várias configurações. Depois, temos um JSON com um access token, que é o elemento usado para provar que estamos logados. Aprendemos sobre esse assunto mais adiante; por ora, vamos focar em entender o formato das mensagens HTTP.
+
+Formato das mensagens HTTP
+Aprendemos que a requisição tem o seguinte formato:
+
+POST /public/login HTTP/1.1
+Host: localhost
+Content-Type: application/json
+Content-length: 45
+
+{"email": "geo@alura.com.br", "senha": "123"}COPIAR CÓDIGO
+A linha inicial contém as informações principais sobre a requisição. O "POST" indica que estamos enviando conteúdo. Nas três linhas seguintes, temos os cabeçalhos (headers) com metadados sobre a requisição. Na última linha, consta o corpo da requisição (body). No caso, mandamos um JSON.
+
+De maneira similar, a resposta também tem uma linha inicial, seguida de cabeçalhos e o corpo com a resposta:
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Vary: Origin, Accept-Encoding
+(...)
+Content-Type: application/json
+Content-Length: 364
+
+{
+    "access_token: "eyJhiJ...WCbZof2rf",
+    (...)
+}COPIAR CÓDIGO
+O objetivo deste vídeo era aprender que as mensagens HTTP tem esse formato específico de cabeçalhos e corpo.
+
+Usamos o telnet, mas não precisamos usá-lo para sempre, afinal, ele é muito baixo nível. Nos próximos vídeos, aprenderemos a utilizar uma nova ferramenta: o Postman. Assim como o telnet, ele é poderoso e permite controlar os parâmetros HTTP. Assim como o Chrome, ele é mais amigável para utilizar.
+
+@@03
+Desafio
+
+No vídeo anterior utilizamos o telnet, uma ferramenta poderosa e versátil que é usada há décadas por pessoas desenvolvedoras e administradoras de sistemas para se conectar a servidores remotos e executar comandos.
+O telnet é muito útil em situações específicas, como quando queremos criar um request "na mão" ou conectar em um socket diretamente. Ou seja, no nosso contexto ele é uma ótima ferramenta de aprendizagem.
+
+Assim, o seu desafio será utilizar o telnet para criar os requests HTTP que fizemos no vídeo.
+
+Para facilitar, deixamos abaixo um tutorial sobre a instalação do telnet, que pode variar dependendo do seu sistema operacional.
+
+Boa prática!
+
+Instalação do telnet
+Habilitando o telnet no Windows 10 e 11
+
+O Windows 10 e 11 já vêm com o telnet instalado, porém é preciso habilitá-lo. Para isso, siga os passos abaixo:
+
+Pressione a tecla Windows do seu teclado e digite "Painel de Controle":
+recorte de tela mostrando o campo de pesquisa do Windows, pesquisando pelo painel de controle".
+
+Clique na opção "Programas" (caso esteja acessando por categorias):
+recorte de rela mostrando as opções do painel de controle do Windows, na tela está selecionada a opção "Programa"
+
+Clique na opção "Ativar ou Desativar recursos do Windows":
+recorte de tela mostrando a opção "Ativar ou Desativar recursos do Windows".
+
+Depois marque o checkbox "Telnet Client":
+recorte de tela do Windows Features, nela é possível ativar ou desativar diversas opções.
+
+Para testar, abra o prompt de comandos do Windows e digite telnet. Se deu tudo certo, você vai ver a mensagem "bem-vindo ao cliente telnet". Pode fechar a janela de comandos.
+
+Usando o telnet no Windows
+
+O telnet no Windows não possui uma interface muito amigável, por exemplo, por padrão ele não mostra na tela o que a gente digita, e causa timeouts sem razão aparente.
+
+Por esse motivo, nós preparamos as seguintes instruções, que permitem que os testes do vídeo anterior sejam executados no Windows também.
+
+Preparar, em um arquivo de texto, a mensagem HTTP que você quer enviar (por exemplo, a do vídeo anterior);
+Abrir o cmd do windows (note que é diferente do powershell, mingw ou cygwin);
+Digitar telnet localhost 8000;
+Copiar a mensagem HTTP inteira que está no arquivo de texto (não coloque mais de uma mensagem no mesmo arquivo);
+Colar na janela do telnet;
+Clicar “enter” duas vezes.
+Com esse setup, você deverá conseguir realizar as requisições HTTP pelo telnet no Windows.
+
+Instalando o telnet no MacOS e no Linux
+
+O MacOS e o Linux não vêm com o telnet instalado por padrão. Para instalar, siga as etapas abaixo:
+
+Mac
+Abra o Terminal.
+Digite o seguinte comando:
+brew install telnet
+COPIAR CÓDIGO
+Pressione Enter.
+O telnet será instalado. Para testar, abra o Terminal e digite o seguinte comando:
+
+telnet localhost 8000
+COPIAR CÓDIGO
+Se deu tudo certo, você vai ver a mensagem "Welcome to telnet". Pode fechar a janela do Terminal.
+
+Linux
+Abra o Terminal.
+Digite o seguinte comando:
+sudo apt-get install telnet
+COPIAR CÓDIGO
+Pressione Enter.
+O telnet será instalado. Para testar, abra o Terminal e digite o seguinte comando:
+
+telnet localhost 8000
+COPIAR CÓDIGO
+Se deu tudo certo, você vai ver a mensagem "Welcome to telnet". Pode fechar a janela do Terminal!
+
+Opinião do instrutor
+
+Usando o telnet no Windows
+O telnet no Windows não possui uma interface muito amigável, por exemplo, por padrão ele não mostra na tela o que a gente digita, e causa timeouts sem razão aparente.
+
+Por esse motivo, nós preparamos as seguintes instruções, que permitem que os testes do vídeo anterior sejam executados no Windows também.
+
+Preparar, em um arquivo de texto, a mensagem HTTP que você quer enviar (por exemplo, a do vídeo anterior);
+Abrir o cmd do windows (note que é diferente do powershell, mingw ou cygwin);
+Digitar telnet localhost 8000;
+Copiar a mensagem HTTP inteira que está no arquivo de texto (não coloque mais de uma mensagem no mesmo arquivo);
+Colar na janela do telnet;
+Clicar “enter” duas vezes.
+Com esse setup, você deverá conseguir realizar as requisições HTTP pelo telnet no Windows.
+
+Espero que isso ajude!
+
+@@04
+Preparando o ambiente
+
+Para os próximos vídeos, vamos usar o Postman, uma ferramenta muito mais expressiva e intuitiva que o telnet. Para instalar o Postman, siga o passo a passo neste link: Postman: saiba como instalar e dar seus primeiros passos | Alura.
+
+https://www.alura.com.br/artigos/postman-como-instalar-dar-seus-primeiros-passos
+
+@@05
+Depurando métodos HTTP
+
+Transcrição
+
+Anteriormente, usamos o telnet no terminal, escrevemos mensagens manualmente e aprendemos sobre o formato das mensagens HTTP. Tanto na requisição quanto na resposta, temos os cabeçalhos seguidos do corpo da mensagem.
+Agora, vamos continuar nos aprofundando no formato dos cabeçalhos de requisições, mais especificamente na linha inicial, por exemplo:
+
+POST /public/login HTTP/1.1COPIAR CÓDIGO
+A primeira palavra da linha tem um nome técnico: o método do HTTP. Para continuar explorando esses conceitos, vamos aprender a usar o Postman, uma ferramenta mais intuitiva que o telnet e bastante poderosa para manipulação de parâmetros.
+
+Postman
+O Postman é uma ferramenta para testar servidores HTTPs, APIs e assim por diante. Ao abrir o Postman, há um menu lateral à esquerda e uma área de trabalho (chamada de workbench) à direita.
+
+Na parte superior do workbench, clicaremos no ícone de mais (+) para criar uma aba com uma nova requisição. No topo dessa aba, temos três elementos:
+
+À esquerda, há um menu dropdown em que é possível alternar entre diversos métodos do HTTP — por padrão, o método GET está selecionado.
+No centro, há um campo para digitar a URL.
+À direita, temos um botão azul escrito "Send" (enviar).
+Começaremos enviando uma requisição para obter as informações da página inicial do AluraBooks. Logo, selecionaremos o método GET e digitaremos a seguinte URL:
+
+http://localhost:3000/COPIAR CÓDIGO
+A barra ao final da URL indica que se trata da página inicial (home). Ao pressionar o botão "Send", recebemos a resposta na parte inferior da interface. No caso, trata-se do código HTML contendo todas as informações necessárias para desenhar a nossa tela do front-end. Nossa requisição foi bem-sucedida!
+
+A seguir, vamos usar um método diferente: o POST. Podemos simplesmente reproduzir a requisição que fizemos no vídeo anterior, em que realizamos o login.
+
+Dessa vez, selecionaremos o método POST. A URL também será diferente, dado que o destino agora é o back-end:
+
+http://localhost:8000/public/loginCOPIAR CÓDIGO
+Não precisamos escrever manualmente as informações do cabeçalho (como HTTP/1.1), pois o Postman ficará responsável por essa parte. Porém, é necessário definir o conteúdo da mensagem — o corpo da requisição. No caso, trata-se de um JSON com o e-mail e a senha para login.
+
+Abaixo do campo em que digitamos a URL, há um menu com várias abas. Acessaremos a aba "Body", depois selecionaremos as opções "raw" e "JSON". No campo de texto exibido abaixo, informaremos o corpo da mensagem:
+
+{"email": "geo@alura.com.br", "senha": "123"}COPIAR CÓDIGO
+Por fim, clicaremos no botão "Send" para enviar a requisição. Na parte inferior, recebemos a resposta com o token de acesso, que podemos usar para acessar páginas protegidas.
+
+Métodos HTTP
+Ao clicar na seta do menu dropdown, temos uma lista de métodos HTTP. Sabemos que o GET serve para obter informações. Já o POST tem o significado de criar elementos. No caso, estamos enviando nossas credenciais e criando um token de acesso que pode ser usado para login.
+
+Há uma lista extensa de métodos, mas os usados com mais frequência são apenas quatro:
+
+Método	Significado
+POST	criar (create)
+GET	ler (read)
+PUT	atualizar (update)
+DELETE	apagar (delete)
+Como estudamos, o POST serve para criar elementos (create) e o GET é utilizado para ler ou obter informações (read). O PUT é o método HTTP usado para atualizações (update), por exemplo, atualizar o endereço ou a senha. Já o DELETE é responsável por apagar elementos (delete), por exemplo, uma conta ou fotos salvas.
+
+Esses métodos HTTP são tão comuns que foi criado um acrônimo, conforme seus significados em inglês, o CRUD:
+
+C: create
+R: read
+U: update
+D: delete
+Esses métodos permitem que façamos a maioria das operações necessárias para nossas aplicações, por exemplo, o AluraBooks. No próximo vídeo, continuaremos explorando o HTTP e entenderemos o que podemos fazer com o token que recebemos do login.
+
+@@06
+Analisando Request e Response
+
+Abaixo há um exemplo de uma requisição e resposta, usando a ferramenta telnet. Através dele, acessamos o recurso raiz da nossa API na porta 8000.
+alt: Exemplo de uma requisição e resposta, usando a ferramenta telnet. A mensagem está dividida em duas partes, request e response. 
+No request temos as seguintes informações
+
+GET/HTTP/1.1
+Host: localhost
+COPIAR CÓDIGO
+Já no response temos as seguintes informações:
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Vary: Origin, Accept-Encoding
+Access-Control-Allow-Credentials: true
+Accept-Ranges: bytes
+Cache-Control: public, max-age=0
+Last-Modified: Mon, 27 Feb 2023 11:49:47 GMT
+ETag: W/’809-18692b5194b’
+Content-Type: text/html; charset=UTF-8
+Content-Length: 2057
+Date: Thu, 06 Apr 2023 06:47:15 GMT
+Host: localhost
+COPIAR CÓDIGO
+O telnet estabelece apenas uma conexão TCP (protocolo de rede que roda abaixo do HTTP) e permite que enviemos dados em cima dessa conexão, através do terminal. Uma vez a conexão estabelecida, basta escrever no terminal e os dados serão enviados automaticamente para o servidor. Para o servidor realmente entender os dados, devemos respeitar a sintaxe do protocolo HTTP!
+
+Nesse exemplo digitamos no terminal:
+
+GET / HTTP/1.1
+Host: localhost
+COPIAR CÓDIGO
+E a resposta do servidor segue logo abaixo:
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Vary: Origin, Accept-Encoding
+Access-Control-Allow-Credentials: true
+Accept-Ranges: bytes
+Cache-Control: public, max-age=0
+COPIAR CÓDIGO
+Agora, baseado nesses dados, qual foi o método HTTP utilizado?
+
+POST
+ 
+O método POST não é utilizado nesse caso.
+Alternativa incorreta
+200 OK
+ 
+Apesar deste item fazer parte da interação entre o cliente e o servidor, ele não representa um método HTTP.
+Alternativa incorreta
+1.1
+ 
+Alternativa incorreta
+GET
+ 
+O método HTTP é GET e o código da resposta é 200.Lembrando que o método define a ação ou intenção da requisição HTTP (GET é igual a receber). O código da resposta dá uma dica ao cliente se a requisição foi um sucesso ou não, e qual foi o problema em caso de falha. O código 200 significa que tudo deu certo!
+
+@@07
+Configurando cabeçalhos para autenticar o usuário
+
+Transcrição
+
+Aprendemos a usar o Postman e entendemos os significados dos métodos HTTP. Além disso, fizemos o login por meio do Postman e obtivemos um código de acesso. Ele permitirá o acesso a informações restritas a um usuário específico.
+Com o AluraBooks aberto no navegador, vamos clicar no botão "Login" na parte superior direita e entrar no sistema:
+
+E-mail: geovane@alura.com.br
+Senha: 123
+Após entrar, acessaremos o link "Minha conta" na parte superior direita da tela, onde antes tínhamos o botão para login. Nessa página, temos nossa lista com detalhes de pedidos.
+
+Essa página é protegida, apenas a minha conta tem acesso a essa lista. Não faria sentido se, ao entrar em minha própria conta, eu pudesse consultar os pedidos de outra pessoa (nem que outra pessoa pudesse conferir a minha lista).
+
+Acessando uma página protegida
+Nós já fizemos o login por meio do Postman e recebemos um token de acesso. A seguir, vamos explorar como entrar na página de pedidos, acessível apenas para usuários logados.
+
+Como a meta é ler os pedidos, usaremos o método GET e nossa URL será a seguinte:
+
+http://localhost:8000/pedidosCOPIAR CÓDIGO
+Ao enviar a requisição, recebemos o seguinte retorno na parte inferior do Postman:
+
+{
+    "status": 401,
+    "message":"Token inválido"
+}COPIAR CÓDIGO
+Recebemos um resultado inesperado! Em vez de ler os pedidos, obtemos uma mensagem de token inválido. Nós já tínhamos obtido o token, então por que não conseguimos acessar?
+
+Os servidores HTTP são stateless. Em outras palavras, os servidores HTTP não guardam estados, portanto não se lembram do aconteceu em requisições anteriores. No caso, ele não lembra que já havia nos autenticado no sistema.
+
+A implicação é que precisamos continuamente comprovar ao servidor quem somos e que já fomos autenticados. É como mostrar nossa identidade e dizer:
+
+"Servidor, sou eu de novo, o Geovane. Eu que estou tentando te acessar. Lembra que você já me autenticou? Aqui está a minha prova"
+Logo, precisamos encontrar um jeito de enviar nosso token para o servidor em todas as requisições!
+
+De início, vamos criar outro token de acesso, realizando o login novamente. No Postman, basta enviar uma requisição GET para a página de login, lembrando de informar as credenciais no corpo da requisição:
+
+http://localhost:8000/loginCOPIAR CÓDIGO
+{"email": "geovane@alura.com.br", "senha": 123}COPIAR CÓDIGO
+Após enviar, copiaremos o token de acesso obtido na resposta do servidor. A seguir, começaremos a configurar os cabeçalhos da requisição!
+
+Configurando cabeçalhos
+No Postman, no menu abaixo da URL, acessaremos a aba "Headers". Nessa aba, há uma tabela cujas primeiras colunas são "Key" (chave) e "Value" (valor). Os cabeçalhos sempre seguem essa estrutura de chave e valor, como o Content-length: 45, que verificamos em aulas passadas.
+
+Na primeira linha da tabela, vamos inserir a chave "Authorization", pois queremos que o servidor entenda que estamos autorizados a acessá-lo.
+
+No valor correspondente, não basta colar o token, é preciso adotar a convenção do uso da palavra "Bearer". Em inglês, bearer significa portador, é a pessoa que carrega algo. Ou seja, é como se estivéssemos carregando nosso documento de identidade.
+
+Portanto, vamos escrever "Bearer", colocar um espaço e colar o token:
+
+Key	Value
+Authorization	Bearer eyJhbGci0iJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imd1b0BhbHVyYS5jb20uYnIiLCJzZW5oYSI6IjEyMyIsIm1hdCI6MTY30DQ3MTU20Cwi ZXhwIjoxNjc4NTEONzY4fQ.ZV5Z97oY7H94_hRDCX66Yf03G-wAQ8jNN-ARvhqKP6E
+Lembre-se de usar o seu próprio token!
+Agora que configuramos nosso cabeçalho para lembrar o servidor quem somos, vamos tentar acessar a página protegida novamente. Faremos uma requisição GET para a página de pedidos:
+
+http://localhost:8000/pedidosCOPIAR CÓDIGO
+Ao enviar a requisição, a resposta do servidor serão os dados dos nossos pedidos! A estrutura é parecida com a seguinte:
+
+[
+    {
+        "id": 89019041,
+        "data": "2022-05-26",
+        "entrega": "2022-05-26",
+        "total": 29.9
+    },
+    {
+        "id": 89019963,
+        "data": "2022-07-26",
+        "entrega": "2022-08-01",
+        "total": 58.8
+    }
+]COPIAR CÓDIGO
+Apesar de ser em formato JSON, trata-se das mesmas informações que conferimos no front-end.
+
+Formas de "lembrar" o servidor
+Aprendemos que, por padrão, o servidor é stateless, logo ele não se lembra do que aconteceu em requisições anteriores. No entanto, existem algumas formas de o lembrarmos.
+
+Uma das formas é o uso da sessão, que foi a abordagem que empregamos. Por exemplo, gerar um token e mostrá-lo ao servidor continuamente para ele lembrar quem está o acessando. A sessão é o tempo que a pessoa usuária permanece logada no sistema.
+
+Outra forma é o uso de cookies. É comum a exibição de um pop-up na tela para a pessoa usuária aceitar ou rejeitar o uso de cookies em sites. Eles são um mecanismo utilizado nos cabeçalhos do HTTP para que o servidor peça para a pessoa cliente salvar algumas informações, que serão usadas posteriormente para lembrar o servidor.
+
+Neste curso, não entraremos em detalhes sobre os cookies, mas deixaremos um "Para saber mais" com uma explicação excelente sobre o funcionamento deles.
+
+Na sequência, continuaremos aprendendo mais sobre as respostas HTTP.
+
+@@08
+Autorização e estado do servidor
+
+Durante o desenvolvimento do AluraBooks, um dos desenvolvedores estava testando o mecanismo de autenticação de usuários do backend. Para isso, ele primeiro fez login na API, e em seguida enviou o seguinte request:
+POST /pedidos HTTP/1.1
+Authorization: Yes (login)
+COPIAR CÓDIGO
+No entanto, a resposta que ele recebeu indicou que esse request não foi autorizado pelo servidor:
+
+HTTP/1.1 401 Unauthorized
+X-Powered-By: Express
+Vary: Origin, Accept-Encoding
+Access-Control-Allow-Credentials: true
+Cache-Control: no-cache
+Pragma: no-cache
+Expires: -1
+Content-Type: application/json; charset=utf-8
+Content-Length: 51
+ETag: W/"33-YImdAd48xqkdD0FiXysFO1TLONs"
+Date: Thu, 30 Mar 2023 08:53:09 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{
+  "status": 401,
+  "message": "Token inválido"
+}
+COPIAR CÓDIGO
+Por que o request não foi autorizado pelo servidor?
+
+O valor do cabeçalho Authorization está incorreto, pois deveria usar o token de autorização.
+ 
+Exato, como o HTTP é um protocolo em que o servidor não guarda estado, o cliente precisa sempre lembrar o servidor que ele possui a devida autorização. Por isso, ele deve re-enviar ao servidor o token que ele obteve quando fez o login.
+Alternativa incorreta
+O request deveria ter usado o método GET ao invés do POST.
+ 
+Alternativa incorreta
+O cabeçalho de autorização não deveria ser preenchido, pois o HTTP é um protocolo que guarda estado e portanto o servidor já sabe que ele está logado.
+ 
+@@09
+Sessão HTTP
+
+Ao digitar o endereço do site no seu navegador, diversos processos entram em ação para garantir que o conteúdo seja carregado corretamente. Um desses processos envolve o protocolo HTTP.
+Qual o papel desse protocolo na comunicação entre seu navegador e o servidor do site que você quer acessar?
+
+O protocolo HTTP é responsável por criptografar todas as informações trocadas entre seu navegador e o servidor.
+ 
+Alternativa incorreta
+O protocolo HTTP é utilizado exclusivamente para transferir arquivos de vídeo e áudio entre servidores e navegadores.
+ 
+Alternativa incorreta
+O protocolo HTTP define como as mensagens são formatadas e transmitidas, e como os navegadores e servidores devem responder a vários comandos.
+ 
+Muito bem. O HTTP define a estrutura das mensagens e a comunicação entre cliente e servidor.
+Alternativa incorreta
+O protocolo HTTP é utilizado para configurar o endereço IP do servidor que você está tentando acessar.
+
+@@10
+Para saber mais: o que é um cookie?
+
+Vimos no vídeo o uso de um cookie para gravar um número, aquele Session ID. Mas o que é um cookie?
+Quando falamos de Cookies, na verdade queremos dizer Cookies HTTP ou Cookie web. Um cookie é um pequeno arquivo de texto, normalmente criado pela aplicação web, para guardar algumas informações sobre o usuário no navegador. Quais são essas informações depende um pouco da aplicação. Pode ser que fique gravado alguma preferência do usuário. Ou algumas informações sobre as compras na loja virtual ou, como vimos no vídeo, a identificação do usuário. Isso depende da utilidade para a aplicação web.
+
+Um cookie pode ser manipulado e até apagado pelo navegador e, quando for salvo no navegador, fica associado com um domínio. Ou seja, podemos ter um cookie para www.alura.com.br, e outro para www.caelum.com.br. Aliás, um site ou web app pode ter vários cookies! Podemos visualizar os cookies salvos utilizando o navegador. Como visualizar, depende um pouco do navegador em questão:
+
+No Chrome: Configurações -> Privacidade -> Configurações de conteúdo... -> Todos os cookies e dados de site... -> Pesquisar alura
+
+No Firefox: Preferências -> Privacidade -> remover cookies individualmente -> Pesquisar alura
+
+Caso queira aprender mais sobre isso pode ler o artigo "O que são cookies e como eles funcionam?".
+
+https://www.alura.com.br/artigos/o-que-sao-cookies-como-funcionam
+
+@@11
+Depurando os códigos resposta HTTP
+
+Transcrição
+
+Em aulas anteriores, analisamos algumas informações no painel de inspeção do Chrome. Na página inicial do AluraBooks, clicamos com o botão direito do mouse no centro da tela e selecionamos "Inspecionar".
+No menu superior do painel de inspeção, acessamos a aba "Network" (rede), onde aparecem diversos logs referentes às requisições do HTTP. Na ocasião, conferimos os logs do acesso à página "Minha conta", que faz uma requisição para o caminho "pedidos". Verificamos a seguinte informação:
+
+Status Code: 200 OK
+Ao lado dessa informação, há um círculo verde e concluímos que parecia um bom sinal.
+
+No Postman, há uma barra acima da área onde recebemos a resposta do servidor. Na parte direita, é possível verificar o status code.
+
+Além do "200 OK", já encontramos outros códigos de status ao longo deste curso. Ao enviar uma requisição para /pedidos sem informar o token, por exemplo, obtivemos o status "401 Unauthorized", isto é, "Não autorizado".
+
+A seguir, vamos aprender o que são esses códigos e sua importância.
+
+Códigos de status
+Por ser um protocolo, o HTTP segue algumas regras. Então, vamos consultar o documento RFC 7231, que define as regras do protocolo HTTP.
+
+RFCs são documentos que definem as regras de um protocolo. Elas são gratuitas na internet e qualquer pessoa pode acessá-las.
+Descendo a página, encontraremos o sumário com todas as definições do HTTP. Por exemplo, na seção 4.3, temos subseções para os métodos que estudamos anteriormente — GET, POST, PUT e DELETE. Você pode ler por conta própria, caso te interesse.
+
+Na seção 6, temos os códigos de status das respostas. Nas subseções, podemos identificar alguns que já conhecemos, como o "200 OK". O status "401 Unauthorized" não consta no sumário, mas ele aparecerá ao longo do documento.
+
+Portanto, nessa seção, temos uma lista dos principais códigos de respostas do HTTP. Perceba que eles estão organizados em classes, de modo que já temos noções do seu significado ao examinar o primeiro dígito.
+
+Os códigos que começam com o número 1 são raramente usados. Mais adiante, estudaremos a troca de protocolos (de HTTP para HTTPS, por exemplo) e encontraremos o status "101 Switching Protocols".
+
+Os códigos iniciados com o número 2 indicam operações bem-sucedidas, como quando conseguimos criar um token ou acessar o conteúdo de um recurso HTTP. É o caso do "200 OK", com o qual já estamos familiarizados.
+
+Os códigos que começam com o número 3 indicam redirecionamentos. Por exemplo, caso uma empresa mude de nome e o domínio de seu site seja alterado, ela pode usar um redirecionamento. Assim, quando uma pessoa acessar o domínio antigo, o HTTP a enviará para o novo site.
+
+Como comentamos anteriormente, o HTTP tem duas entidades conversando: o cliente e o servidor. Os códigos que começam com o número 4 indicam erros provindos do lado do cliente, como "400 Bad Request" e "401 Unauthorized".
+
+Já os códigos iniciados com o número 5 indicam erros do lado do servidor. Você provavelmente já se deparou com o código "500 Internal Server Error" (erro interno do servidor), quando algum site estava com problemas. No caso de erros, os servidores são configurados para responder com códigos iniciados com 5.
+
+Esses códigos já definidos nos ajudam a criar aplicações fáceis de integrar. Vamos supor que trabalhamos em time de tecnologia. Nós somos responsáveis pelo back-end e há outras pessoas encarregadas do front-end. Ao usar esses métodos conforme as definições da RFC, a comunicação torna-se mais simples entre todos, já que se trata de uma linguagem universal.
+
+Sendo assim, aprendemos sobre o formato das mensagens HTTP, detalhes sobre requisições e respostas, e como realizar o login com o token.
+
+Falando em login, será que ele está protegido? Será que o sistema AluraBooks está seguro? Vamos explorar esse assunto na próxima aula.
+
+@@12
+Código de sucesso
+
+Durante o desenvolvimento do AluraBooks, aprendemos que cada resposta HTTP possui um código de status que informa sobre o resultado da requisição.
+Qual código de status HTTP indica que uma requisição foi bem-sucedida?
+
+404
+ 
+Alternativa incorreta
+300
+ 
+O código 300 representa múltipla escolha para o recurso que o cliente requisitou, como vários formatos de um vídeo.
+Alternativa incorreta
+100
+ 
+Alternativa incorreta
+200
+ 
+O código 200 significa OK, ou Sucesso, que não houve nenhum problema no processamento da requisição e ela foi bem sucedida. Existem mais códigos que começam com 2xx. No entanto, 200 é de longe o mais utilizado, principalmente no desenvolvimento de uma aplicação web.
+Na documentação oficial, se diz a respeito da classe de códigos que começam com 2xx:
+2xx - Resposta bem sucedida!
+Essa classe de códigos de status indica que a ação solicitada pelo cliente foi recebida, compreendida, aceita e processada com êxito.
+A tabela completa de mensagens HTTP pode acessadas nos seguintes links: de forma resumida ou forma detalhada.
+
+https://www.w3schools.com/tags/ref_httpmessages.asp
+
+https://www.rfc-editor.org/rfc/rfc2616#section-10
+
+@@13
+Problema no servidor
+
+Vimos que há diversos códigos HTTP, cada um com a finalidade de representar o status de uma operação com dados.
+Qual código HTTP representa algum problema gerado no servidor?
+
+302
+ 
+Alternativa incorreta
+402
+ 
+Esse código é reservado e significa que é necessário um pagamento para acessar algum recurso.
+Alternativa incorreta
+500
+ 
+A descrição completa deste código na documentação oficial é 500 Internal Server Error, que significa que o servidor teve algum problema interno na hora de tratar a requisição.
+O código 500 acontece com frequência quando estamos desenvolvendo uma aplicação web e, ao testar, percebemos que erramos algo na lógica que gerou um problema no servidor.
+De forma geral, erros da classe 5xx significam que houve algum problema no servidor.
+Alternativa incorreta
+301
+
+@@14
+Recurso não encontrado
+
+Abra uma nova aba no navegador e tente acessar a seguinte URL:
+http://g1.globo.com/algo-que-nao-existe
+
+Qual foi o código de resposta?
+
+Obs: Você precisa depurar a requisição HTTP para descobrir o código da resposta (retorne aos vídeos anteriores caso precise relembrar).
+
+http://g1.globo.com/algo-que-nao-existe
+
+200
+ 
+Alternativa incorreta
+500
+ 
+Alternativa incorreta
+405
+ 
+Alternativa incorreta
+404
+ 
+404 é o código clássico que indica que o recurso não foi encontrado. Em geral, a classe 4xx indica que o cliente errou algo na requisição.
+
+@@15
+O que aprendemos?
+
+Nessa aula, você a aprendeu a:
+Inspecionar mensagens HTTP no terminal usando o telnet, para verificar que as mensagens trafegadas são baseadas em texto;
+Verificar que as mensagens HTTP são divididas em cabeçalho e corpo da mensagem;
+Depurar os métodos HTTP usando o Postman, permitindo ler e criar recursos no backend do AluraBooks;
+Configurar cabeçalhos em requisições para o backend, permitindo o acesso a conteúdos que exigem que o usuário esteja logado;
+Depurar os códigos de resposta HTTP, os quais são divididos em classes, tais como como 2xx (sucesso) e 4xx (erro do cliente).
