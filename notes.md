@@ -1893,3 +1893,251 @@ Especificar parâmetros com POST através de informações no corpo da requisiç
 Criar uma rota de documentação no AluraBooks, servindo HTML ao invés de JSON. Para isso, aprendemos:
 Como informar o formato do conteúdo no corpo de uma mensagem HTTP, através do cabeçalho Content-Type;
 Como indicar o formato esperado da resposta, através do cabeçalho Accept.
+
+#10/11/2025
+
+@06-Conhecendo as evoluções do HTTP
+
+@@Transcrição
+
+aprendemos sobre os parâmetros GET, POST e REQUEST do HTTP e o deixamos mais seguro.
+Porém, tudo o que desenvolvemos passa por iterações e melhorias. Nesta aula, conheceremos as limitações do HTTP na versão 1.1 e as soluções apresentadas na versão número 2.
+
+Nas camadas da Internet, temos as Física na base e a Enlace acima que é nosso wi-fi por exemplo. Depois, temos a rede que trata dos endereços e IPs, além das camadas de Transporte e Aplicação.
+
+Já conhecemos bastante esta última, afinal é onde acontece o HTTP e o HTTPS, browser, servidores e tudo o que usamos até agora.
+
+Nesta aula, abordaremos mais a cama de Transporte que pega as mensagens do HTTP e leva do servidor ao cliente.
+
+Aprendemos que tanto o HTTP/1.1 quanto o HTTP/2 trabalham em cima do TCP.
+
+As maiores diferenças entre esses dois protocolos é que o primeiro deixa a desejar as requisições sequenciais, ou seja, cada vez que fazemos um REQUEST, temos que esperar terminar para começar o outro no contexto de uma conexão TCP, que é o canal por onde as mensagens passam.
+
+Conseguiremos verificar que não acontecem ao mesmo tempo abrindo a interface do nosso debugger clicando com o botão direito sobre a página inicial do AluraBooks para selecionar "Inspect".
+
+Clicando na aba "Network", atualizaremos a página para vermos as diversas requisições sendo feitas. clicando em "localhost" na lista lateral esquerda da aba, abriremos os detalhes e veremos mais diversas imagens em sequência.
+
+Conforme avançamos pelos itens que tiveram requests, perceberemos alterações nos destaques da parte superior. Cada uma das linhas horizontais significa uma conexão TCP.
+
+No HTTP/1.1, temos que esperar cada requisição ao terminar para fazermos outras, então o navegador cria várias conexões em paralelo para permitir que consigamos fazer requests simultâneas.
+
+Mas pode funcionar melhor, então iremos inspecionar o HTTP/2 para entendermos a solução de multiplexação em que pega requisições que acontecem em paralelo e juntá-las em uma mesma conexão TCP, melhorando a performance da aplicação.
+
+Para isso, habilitaremos o HTTPS, pois como o HTTP/2 é mais moderno, a segurança está embutida. Usaremos o comando que já conhecemos do ssl para criarmos um certificado e uma chave.
+
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crtCOPIAR CÓDIGO
+Colaremos no Terminal e executaremos.
+
+Em seguida, nos pedirá os dados do certificado, e completaremos apenas com BR mesmo. se digitarmos ls em seguida, veremos o server.crt e o server.key.
+
+Além de criarmos a identidade do certificado, instalaremos a biblioteca spdy que nos permitirá usar o HTTP/2.
+
+npm i spdyCOPIAR CÓDIGO
+Depois, geraremos uma pasta "build" atualizada em nossa aplicação, que é como se empacotássemos a aplicação para produção.
+
+Para isso, aplicaremos o comando npm run build e aguardaremos a compactação na pasta com tudo que precisamos para o deploy.
+
+Em seguida, criaremos o servidor que serve o conteúdo da pasta "build" usando HTTP/2.
+
+Abrindo o VSCode, veremos a pasta "curso-react-alurabooks" importada na lista lateral esquerda, clicaremos com o botão direito do mouse para criarmos o novo arquivo server_http2.js.
+
+O conteúdo será:
+
+const spdy = require("spdy")
+const express = require("express")
+const fs = require("fs")
+
+const app = express()
+
+app.use(express.static("build"))
+
+spdy.createServer(
+    {
+        key: fs.readFileSync("./server.key"),
+        cert: fs.readFileSync("./server.crt")
+    },
+    app
+).listen(3002, (err) => {
+    if(err){
+        throw new Error(err)
+    }
+    console.log("Listening on port 3002")
+})COPIAR CÓDIGO
+Diferente de anteriormente, desta vez estaremos passando a pasta "build" como parâmetro para dizer que será a partir dele que nossos arquivos serão servidos.
+
+Por fim, o mais importante é o spdy que permitirá servir conteúdos através do protocolo HTTP/2.
+
+Salvaremos e voltaremos ao Terminal para executarmos o arquivo com ls e node server_http2.js. Depois, abriremos o browser com uma nova aba no endereço "https://localhost:3002".
+
+Pode ser que recebamos um alerta, afinal nosso certificado não é válido para proteger um site depois que já estiver em produção. Iremos ignorar e prosseguir.
+
+Na página inicial do ALuraBooks, inspecionaremos o código na aba "Network" e veremos os títulos dos conteúdos que estão aparecendo em cada coluna.
+
+Clicando com o botão direito sobre "Status", selecionaremos "Protocol" para habilitarmos o tipo de protocolo usado. Ao recarregarmos a página, veremos que será preenchida por "h2".
+
+Observando a linha do tempo acima, veremos que está bem diferente da que era apresentada usando HTTP/1.1 originalmente. Ou seja, melhoramos a performance.
+
+Portanto, usando HTTP/2, conseguiremos multiplexar e fazer várias requisições ao mesmo tempo dentro de uma ou pelo menos uma quantidade menor de conexões TCP, economizando recursos e deixando mais rápido.
+
+Como vimos no formato das mensagens, o HTTP/1.1 utiliza cabeçalhos textuais como Accept-Ranges: bytes, enquanto o HTTP/2 tem o mesmo cabeçalho porém com as letras minúsculas apenas.
+
+Isso acontece porque no HTTP/2 temos o mecanismo de compactação de cabeçalho, em que o que era legível em formato de texto passa por um algoritmo de compressão e se torna um cabeçalho binário que pode ser enviado pela rede e economizar recursos.
+
+Por fim, a última diferença entre os protocolos é que o HTTP/1.1 possui request obrigatório, então sempre que o cliente quer obter dados, precisará fazer uma requisição ao servidor, afinal é o que aprendemos sobre arquitetura do HTTP.
+
+Porém, observando nosso projeto novamente na tela de debug, há muitas informações retidas, então sempre que formos fazer um request pelo "localhost", com certeza precisaremos de todas as imagens que fazem parte do front-end.
+
+Mas o servidor poderia já saber isso e ser mais "proativo" e mandar as informações ao cliente. É exatamente isso que o HTTP/2 faz através da feature chamada server push, que deixa o servidor mais "inteligente".
+
+Como a web não pára de evoluir, a seguir conhecemos a versão mais nova do HTTP.
+
+@@02
+Faça como eu fiz: configurando o HTTP/2
+
+Então recapitulando, para configurar o HTTP/2 no servidor do nosso frontend, fazemos da seguinte forma.
+Primeiro, precisamos do certificado digital e da chave privada (note que nós já geramos esses itens para o backend, mas para o frontend ainda não).
+
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crtCOPIAR CÓDIGO
+Depois, instalamos o pacote que dá suporte ao HTTP/2 no NodeJS:
+
+npm install spdyCOPIAR CÓDIGO
+Agora, geramos uma versão de produção da nossa aplicação React:
+
+npm run buildCOPIAR CÓDIGO
+Esse comando vai disponibilizar o nosso frontend pronto para deploy em uma pasta chamada build.
+
+Criamos então o arquivo server_http2.js, que vai servir o nosso frontend com o HTTP/2 usando a biblioteca spdy:
+
+const spdy = require("spdy")
+const express = require("express")
+const fs = require("fs")
+
+const app = express()
+
+app.use(express.static("build"))
+
+spdy.createServer(
+  {
+    key: fs.readFileSync("./server.key"),
+    cert: fs.readFileSync("./server.crt")
+  },
+  app
+).listen(3002, (err) => {
+  if(err){
+    throw new Error(err)
+  }
+  console.log("Listening on port 3002")
+})COPIAR CÓDIGO
+Por fim, executamos esse arquivo com o comando node server_http2.js.
+
+Opinião do instrutor
+
+Prontinho! Agora podemos acessar nosso frontend com HTTP/2 através da URL https://localhost:3002 🙂
+
+@@03
+As vantagens do HTTP/2
+
+Acabamos de aprender que apesar de o HTTP/1.1 ser amplamente utilizado na Internet, ele não é perfeito. Para resolver alguns problemas do HTTP/1.1, e também para tornar o HTTP mais eficiente, o HTTP/2 foi desenvolvido. Nesse contexto, selecione as alternativas corretas:
+
+A multiplexação permite que se utilize mais conexões TCP ao mesmo tempo, o que deixa o HTTP/2 mais rápido.
+ 
+Alternativa correta
+Com a funcionalidade server push introduzida pelo HTTP/2, o cliente pode enviar dados livremente para o servidor.
+ 
+Alternativa correta
+Uma das limitações do HTTP/1.1 é que ele somente suporta requisições sequenciais num mesmo socket TCP. O HTTP/2 resolve isso utilizando uma técnica chamada de multiplexação.
+ 
+Com a multiplexação, é possível enviar e receber mensagens ao mesmo tempo na mesma conexão TCP.
+Alternativa correta
+Os cabeçalhos binários introduzidos pelo HTTP/2 melhoram a performance, pois isso reduz o número de bytes transmitidos pela rede.
+ 
+Compactar os cabeçalhos realmente otimiza o uso da rede, e tende a deixar as trocas de mensagens HTTP mais rápidas.
+
+@@04
+Conhecendo o HTTP3
+
+Transcrição
+
+Nesta aula, falaremos sobre o HTTP/3 e suas vantagens.
+Na camada de transporte, falaremos sobre a variação do UDP usada pelo HTTP/3, chamada de protocolo QUIC que garantirá que a mensagem chegará ao destino e que a Internet não seja "inundada" de dados, pois o TCP possui alguns mecanismos de controle de fluxo.
+
+Ao mesmo tempo que protege, deixa as conexões mais lentas. Além disso, o TCP é um protocolo clássico assim como o UDP que já estão desenvolvidos há bastante tempo e são bem suportados por todos os navegadores, servidores e dispositivos.
+
+Já o QUIC é uma evolução do UDP criado com o objetivo de aprimorá-lo, afinal é possível que uma mensagem não chegue. Às vezes não há problema, como no caso de ver um filme online e perder apenas um dos milhares de frames.
+
+Porém, não funciona tão bem com o HTTP usando UDP diretamente, pois pode ser que o servidor não receba a resposta. Então as melhorias aplicadas ao QUIC resolvem esse problema também.
+
+Como é mais novo, já existia HTTPS que roda "em cima" do TLS, então já vem embutido e permite criar conexões mais seguras. Portanto, há diversas vantagens em utilizar o QUIC.
+
+Em comparação com HTTP/1.1 e HTTP/2 em que é necessária uma conexão TCP, depois TLS que permite o HTTPS entre cliente e servidor para finalmente pegar dados seguros, o HTTP/3 substitui o TCP e já inclui o TLS, então faz tudo de uma só vez.
+
+Como criptografa as mensagens mais rapidamente, consegue mandar mensagem HTTPS antes.
+
+Para vermos sites que o usam, acessaremos "google.com" no navegador e iremos inspecionar.
+
+Na aba "Network", recarregaremos a página e, com a coluna de protocolo já habilitada, veremos o conteúdo "h3". Portanto, o próprio Google já está usando.
+
+Infelizmente ainda não temos todas as bibliotecas disponíveis para HTTP/3 em todas as linguagens, afinal ainda está em estágio experimental.
+
+Mas de qualquer maneira, é sempre importante nos familiarizarmos com as ferramentas do futuro para nos prepararmos para usar.
+
+@@05
+As novidades do HTTP/3
+
+O HTTP/3 melhora ainda mais o desempenho do HTTP e as suas principais mudanças não são na camada de aplicação (onde roda o HTTP), mas, sim, na camada de transporte.
+Qual foi a mudança que ocorreu no protocolo de transporte?
+
+O HTTP/3 substitui o protocolo de transporte TCP pelo QUIC, que é um protocolo baseado em UDP.
+ 
+A principal mudança do HTTP/3 é o uso do QUIC para enviar mensagens HTTP/2. Já o QUIC, por sua vez, é baseado no UDP, e é mais eficiente do que usar o TCP. Para conseguir isso, o QUIC introduz o mínimo de funcionalidade necessária para obter confiabilidade nas mensagens (como ocorre no TCP), mas sem sacrificar a performance.
+Alternativa incorreta
+O HTTP/3 melhora a performance através do QUIC, que por sua vez usa o TCP para comprimir os dados.
+ 
+Alternativa incorreta, o QUIC não usa o TCP, e o TCP não tem a ver com compressão de dados.
+Alternativa incorreta
+Um dos focos do HTTP/3 é a compactação avançada de cabeçalhos, através do uso de técnicas de Inteligência Artificial.
+
+@@06
+Para saber mais: as versões novas do HTTP já estão sendo usadas?
+
+Nós aprendemos sobre as melhorias trazidas pelas novas versões do HTTP, agora vamos aprender um pouco mais sobre o uso delas na prática.
+De acordo com o site W3Tech, o HTTP/2 já está sendo usado por quase 40% de todos os sites da Internet. Sites populares que utilizam o HTTP/2 incluem: google.com, microsoft.com, e netflix.com. Além disso, o mesmo site sugere que o HTTP/3 é usado por 25% dos sites na Internet. Trata-se de uma adoção bastante rápida, considerando que o HTTP/2 foi publicado como padrão oficial em 2015, e o HTTP/3 em Junho de 2022. Vale lembrar, é claro, que empresas que desenvolvem tanto servidores quanto navegadores (como é o caso do Google), já vinham usando as novas versões mesmo antes de elas serem publicadas oficialmente.
+
+Agora, voltando nossa atenção para o lado prático, várias linguagens e frameworks já suportam as novas versões do HTTP, confira alguns exemplos abaixo:
+
+No Java, é possível utilizar o HTTP/2, por exemplo, habilitando um módulo no framework Spring Boot;
+No Python, é possível utilizar o pacote hypercorn para habilitar o HTTP/2 e o HTTP/3 no framework Django;
+E claro, podemos também utilizar o HTTP/2 no NodeJS com o pacote spdy, como fizemos em um vídeo anterior.
+É interessante notar a evolução rápida nos padrões: há poucos anos o HTTP/2 foi inventado, e agora já temos quase metade da Internet utilizando-o.
+
+Por outro lado, não devemos esquecer que, por mais que se adicione otimizações e melhorias, os princípios básicos continuam os mesmos:
+
+O HTTP é um protocolo que segue o modelo request-response;
+Ele funciona na camada de aplicação;
+As mensagens são divididas em cabeçalho e corpo;
+Temos métodos nas requisições, e status codes nas respostas.
+Portanto, lembre-se que todo o conhecimento que você adquiriu nesta aula, é um complemento, pois na prática você estará utilizando todas as características do HTTP que estudamos ao longo do curso.
+
+@@07
+O que aprendemos?
+
+Nessa aula, você aprendeu a:
+Identificar as limitações do HTTP/1.1, bem como as melhorias trazidas pelo HTTP/2 e HTTP/3;
+Configurar o HTTP/2 na API do AluraBooks;
+Verificar que o HTTP/2 está ativo, utilizando a ferramenta de inspeção do navegador, incluindo a verificação de que são utilizadas menos conexões no caso do HTTP/3, que adota o protocolo QUIC (baseado em UDP) em vez do TCP.
+
+@@08
+Conclusão
+
+Transcrição
+
+Parabéns! Finalizamos um curso de HTTP.
+Configuramos parâmetros e deixamos nosso AluraBooks mais eficiente com a nova versão HTTP/2 e mais seguro com HTTPS.
+
+Como se trata de um protocolo aberto, podemos usar em nossa linguagem de formação favorita.
+
+Caso haja dúvidas, sugestões ou comentários, nossa comunidade no Discord e nosso Fórum estão sempre disponíveis para te receber e melhorar o conteúdo!
+
+Até o proximo curso!
+
+ DISCUTIR NO FÓRUM
