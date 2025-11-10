@@ -1265,7 +1265,6 @@ Depurar os códigos de resposta HTTP, os quais são divididos em classes, tais c
 
 @@01
 Preparando o ambiente
- PRÓXIMA ATIVIDADE
 
 Nesta aula vamos utilizar o comando openssl, que permite, entre outras coisas, gerar chaves privadas e certificados digitais. Existem algumas recomendações específicas para o uso desse comando, dependendo do sistema operacional que você usar. Confira a seguir como utilizar o comando openssl no Linux, MacOS e Windows.
 Linux
@@ -1365,7 +1364,6 @@ Neste vídeo, habilitamos o HTTPS com sucesso e demonstrar que ele deixa as noss
 
 @@03
 Faça como eu fiz: configurando o HTTPS no seu backend
- PRÓXIMA ATIVIDADE
 
 A melhor forma de assimilar os conteúdos que você acabou de assistir é reproduzi-los na prática!
 Então vamos lá, começando pela configuração do nosso backend de modo seguro.
@@ -1399,7 +1397,6 @@ https://www.wireshark.org/download.html
 
 @@04
 Para saber mais: certificado digital
- PRÓXIMA ATIVIDADE
 
 Quando precisamos informar nossos dados a algum servidor, queremos ter certeza que este servidor realmente representa a entidade em questão. Queremos confiar em quem estamos fornecendo nossos dados!
 Um certificado digital prova uma identidade para um site, onde temos informações sobre o seu domínio e a data de expiração desse certificado. Além disso, o certificado ainda guarda a chave pública que é utilizada para criptografar (cifrar) os dados que são trafegados entre cliente e servidor.
@@ -1449,7 +1446,6 @@ Acabamos de abordar como proteger os nossos dados com HTTPS e falamos do papel d
 
 @@06
 Características do HTTPS
- PRÓXIMA ATIVIDADE
 
 Aprendemos que o HTTPS permite a troca de mensagens HTTP de forma segura, e vimos na prática que ele realmente esconde, por exemplo, a nossa senha de potenciais ataques na rede.
 Nesse contexto, sobre as características do HTTPS, selecione todas as opções abaixo que estejam corretas:
@@ -1472,7 +1468,6 @@ Parabéns, você acertou!
 
 @@07
 Certificado digital e chave privada
- PRÓXIMA ATIVIDADE
 
 Ao habilitar o HTTPS no projeto AluraBooks, nós configuramos o backend, que utiliza NodeJS. Para isso, nós modificamos o código para carregar dois arquivos: o certificado digital e a chave privada.
 Sobre esse assunto, selecione a alternativa correta:
@@ -1491,7 +1486,6 @@ Se o nosso servidor usar HTTPS, ele estará 100% seguro.
 
 @@08
 Para saber mais: as chaves do HTTPS
- PRÓXIMA ATIVIDADE
 
 Aprendemos no vídeo que o HTTPS usa uma chave pública e uma chave privada. As chaves estão ligadas matematicamente, o que foi cifrado pela chave pública só pode ser decifrado pela chave privada. Isso garante que os dados cifrados pelo navegador (chave pública) só podem ser lidos pelo servidor (chave privada). Como temos duas chaves diferentes envolvidas, esse método de criptografia é chamado de criptografia assimétrica. No entanto, a criptografia assimétrica tem um problema, ela é lenta.
 alt: Diagrama horizontal com duas partes, da esquerda para a direita: um quadro azul com um ícone de chave amarela com o nome “chave pública” que é indicada no navegador e, ao lado, outro quadro em azul com um ícone de chave branca com o nome “chave privada” que é indicada no servidor.
@@ -1508,9 +1502,394 @@ Então, HTTPS começa com criptografia assimétrica para depois mudar para cript
 
 @@09
 O que aprendemos?
- PRÓXIMA ATIVIDADE
 
 Nessa aula, você a aprendeu a:
 Utilizar a ferramenta Wireshark para verificar que o HTTP estava expondo dados sensíveis (usuário e senha);
 Configurar o backend para habilitar o HTTPS, a versão segura do HTTP que faz com que os dados sejam criptografados antes do envio;
 Caracterizar o que são certificados digitais e chaves públicas, peças fundamentais para permitir a segurança dos nossos websites através do HTTPS.
+
+#10/11/2025
+
+@05-Controlando o HTTP
+
+@@01
+Usando parâmetros com GET e POST
+
+Transcrição
+
+Retomando o projeto do AluraBooks, vamos seguir explorando as capacidades do protocolo HTTP. Aprenderemos como filtrar livros por categorias e também como criar novos livros.
+Acessando pelo navegador o endereço localhost:3000e descendo a página da aplicação até a seção de "categorias mais buscadas", temos as seguintes categorias:
+
+Android;
+orientação a objetos;
+marketing digital;
+agile;
+startups;
+HTML e CSS;
+Java;
+Python.
+Vamos entender como podemos manipular o nosso back-end para fazer esse filtro. Isso para que quando implementarmos essa parte no front-end já vamos saber como filtrar através do HTTP.
+
+No Postman, estamos com o método get e o endereço http://localhost:8000/ (URL do back-end). No final da URL colocamos /livros.
+
+http://localhost:8000/livrosCOPIAR CÓDIGO
+Em seguida, clicamos no botão "Send", para enviar a requisição.
+
+Como retorno, temos um JSON no corpo da resposta. Nele, temos vários livros com os campos id, categoria, título, slug, descrição, isbn, número de páginas, etc.
+
+Retorno do JSON (não exibimos todos os campos)
+[
+    {
+            "id": 1,
+            "categoria": 3,
+            "titulo": "Acessibilidade na Web",
+            "slug": "acessibilidade-na-web",
+
+            // retorno JSON omitido
+    }
+]COPIAR CÓDIGO
+Mas o que são esses números da categoria? O que estamos visualizando é o id. Para acessarmos essas categorias, vamos até a URL e no final ao invés de /livros colocamos /categorias.
+
+http://localhost:8000/categoriasCOPIAR CÓDIGO
+Depois clicamos no botão "Send".
+
+Como retorno, temos:
+
+[
+    {
+            "id": 1,
+            "nome": "Programação",
+            "slug": "programação"
+    },
+    {
+            "id": 2,
+            "nome": "Mobile",
+            "slug": "mobile"
+    },
+    {
+            "id": 3,
+            "nome": "Front-end",
+            "slug": "frontend"
+    },
+    {
+            "id": 4,
+            "nome": "Infraestrutura",
+            "slug": "infraestrutura"
+    },
+
+// retorno omitido
+
+]COPIAR CÓDIGO
+Note que cada id está associado a uma categoria. Vamos filtrar os livros da categoria de front-end, que é o de número 3. No final da URL colocamos /livros no final e clicamos em "Send".
+
+http://localhost:8000/livrosCOPIAR CÓDIGO
+Perceba que nesse retorno temos livros de todas as categorias, para filtrarmos os da categoria de front-end precisamos passar parâmetros para o servidor para instruirmos ele a realizar o filtro. Para passarmos esses parâmetros pela URL, após o /livros usamos o sinal de interrogação passando categoria=3, por exemplo. Ou seja, o nome da variável que desejamos filtrar e o valor.
+
+Assim, ficamos com:
+
+http://localhost:8000/livros?categoria=3COPIAR CÓDIGO
+Ao clicarmos em "Send", temos no corpo da resposta somente livros da categoria 3 referente ao front-end.
+
+É assim que passamos os parâmetros usando o método get.
+
+O método get é usado para ler dados.
+Ao invés de filtrarmos a categoria de um livro, vamos cadastrar um novo livro. Para isso, precisamos montar um JSON parecido com o que temos no retorno.
+
+JSON já montado pelo instrutor:
+{
+    "id": 34,
+    "categoria": 3,
+    "titulo": "Novo livro",
+    "slug": "novo-livro",
+    "descricao": "Livro do curso HTTP",
+    "isbn": "978-65-1111-11-1",
+    "numeroPaginas": 200,
+    "publicacao": "2023-01-01",
+    "imagemCapa": "heetps://raw.githubusercontent.com/viniciosneves/alurabooks/cursp-novo/public/imagens/livros/acessibilidade.png",
+    "autor": 1,
+    "opcoesCompra": [{
+        "id": 1,
+        "titulo": "E-book",
+        "preco": 29.9,
+        "formatos": [".pdf", ".pub", ".mob"]
+    }],
+    "sobre": "Compre esse livro e aprenda tudo sobre HTTP."
+}COPIAR CÓDIGO
+Já que usamos para filtrar os parâmetros daquela forma com o get, com o post passamos o JSON completo após o sinal de interrogação? Acho que não, né. Quando usamos o método post, é comum enviarmos informações maiores e, por isso, ao invés de usarmos a URL com o parâmetro de busca, utilizamos o corpo da mensagem do post para enviar esses parâmetros para o servidor.
+
+Mudamos o verbo de get para post antes do endereço, depois selecionamos a aba "body" abaixo da URL que estamos em /livros, e no mesmo nível da aba na caixa de escolher colocamos a opção "raw" (mensagem escrita de forma crua) e em "text" colocamos JSON. Na sequência, colamos o JSON no corpo no campo em branco.
+
+Lembrando que estamos usando o endereço http://localhost:8000/livros
+Para criarmos o livro, vamos enviar a nossa requisição clicando no botão "Send". No retorno, temos informando o Status 201 Created, significa que foi criado.
+
+Para testar, colocamos o método get novamente, apagamos o conteúdo no formato JSON que colamos (o get não usa o corpo da mensagem) e depois clicamos em "Send". Usamos o mesmo endereço http://localhost:8000/livros.
+
+Descendo até o último livro do retorno, temos o nosso "Novo livro" criado com sucesso. Observe que é o id de número 34, com a categoria 3 e o título "Novo livro". Agora esse livro faz parte da nossa coleção de livros do back-end.
+
+Enviando parâmetros
+Usamos dois métodos ao longo desse vídeo:
+
+get (leitura);
+post (criar).
+No get usamos o que chamamos de query params (em português, "parâmetros de consulta"), como, por exemplo, o /livros?categoria=1 (passamos direto na URL). No post, enviamos os parâmetros pelo corpo da mensagem, porque são dados maiores, usando o formato JSON, XML, etc.
+
+No próximo vídeo, aprenderemos como determinar o formato dessas mensagens que serão enviadas no corpo da mensagem.
+
+Até mais!
+
+@@02
+Testando parâmetros da requisição
+
+Aproveitando o gancho do vídeo anterior, vamos testar o envio de parâmetros através da requisição, fazendo uma busca no Google pela palavra Alura.
+Para isso, na URL do Google, vamos enviar na requisição o parâmetro q com o valor Alura. Ou seja: google.com.br/search?q=Alura. Colocamos essa URL na barra de endereços do nosso navegador, apertamos Enter, e temos o resultado: uma busca pelo nome "Alura" no Google.
+
+Nesse caso, qual método HTTP foi usado?
+
+POST
+ 
+Alternativa incorreta
+GET
+ 
+Quando passamos os parâmetros da requisição na URL, estamos fazendo uso do método GET. Isso é super útil quando precisamos repetir a requisição com os mesmos parâmetros :)
+Alternativa incorreta
+DELETE
+
+@@03
+Para saber mais: enviando mais de um parâmetro via GET
+
+Podemos utilizar as query strings para enviar parâmetros em uma URL, por exemplo fazendo da seguinte forma: http://localhost/livros?categoria=3. Mas e se além da categoria, também quiséssemos filtrar pelo autor? Nesse caso, faríamos assim: /livros?categoria=3&autor=1. Ou seja, utilizamos o caractere & para separar os nomes dos parâmetros que configuramos.
+Pensando agora em outro exemplo, mais complexo, poderíamos ter a seguinte URL:
+
+http://eletronicos.com/products?search=TV&maxPrice=1000&brand=ACME&model=XPTO&delivery=free&
+
+Nesse caso, a URL representa uma busca por uma TV da marca ACME e modelo XPTO, com preço máximo de R$ 1.000,00 e taxa de entrega grátis. O interessante de ter os parâmetros na URL, é que além de ficar óbvio que o request é um GET, fica fácil para o usuário compartilhar a busca que ele fez, pois é só copiar e colar a URL já com todos os parâmetros. Se utilizássemos POST, ou qualquer outro método onde os parâmetros vão no corpo da mensagem, isso não seria possível.
+
+A especificação do HTTP não define um número máximo de parâmetros para uma URL, e nem mesmo um tamanho máximo para a URL (conforme a seção 3.2.1 da RFC 2616). Por isso, cada navegador e servidor pode implementar o seu próprio limite máximo, embora haja uma convenção de suportar até 2000 caracteres. Portanto, quando estiver criando seus requests, caso eles estejam muito grandes, considere convertê-los para um POST, ou talvez refatorar as URLs para simplificar o envio de parâmetros.
+
+https://www.ietf.org/rfc/rfc2616.txt
+
+@@04
+Qual é o método HTTP?
+
+Nesta aula, fizemos uma requisição muito parecida com a requisição abaixo, cujo objetivo é obter a lista de livros de uma categoria específica.
+<MÉTODO> /livros?categoria=3 HTTP/1.1
+HOST: www.alurabooks.com.brCOPIAR CÓDIGO
+Qual método HTTP devemos colocar no lugar de <MÉTODO> para a requisição funcionar corretamente?
+
+
+Alternativa incorreta
+POST
+ 
+Alternativa incorreta
+GET
+ 
+O GET é o método usado para ler informações do servidor, e também o mais usado em conjunto com as query strings (os parâmetros que vêm depois do ponto de interrogação (?)).
+Alternativa incorreta
+PUT
+ 
+Alternativa incorreta
+DELETE
+
+@@05
+Para saber mais: tem como usar os métodos de forma ''errada''?
+
+Aprendemos que o GET é usado para ler, e o DELETE é usado para apagar recursos. Mas será que tem como abusar dessa regra? A resposta é sim, vamos ver um exemplo.
+O protocolo HTTP define que o GET deve ser utilizado apenas para acessar os dados, mas o HTTP, como protocolo, não pode impedir a pessoa desenvolvedora de fazer algo diferente. Por exemplo, veja a requisição a seguir:
+
+GET /vendas/remove?id=53 HTTP/1.1
+HOST: www.vendasfuturas.com.brCOPIAR CÓDIGO
+Usamos GET, mas repare que o nome do recurso muda a intenção do método HTTP. O recurso se chama /vendas/remove, ou seja, queremos apagar a venda com a identificação 53, usando o método GET!
+
+O protocolo HTTP define apenas algumas regras entre cliente e servidor. O que o servidor realmente faz depende da implementação, ok?
+
+@@06
+Para saber mais: parâmetros na URL
+
+Como, por exemplo, podemos enviar uma requisição usando o método GET para carregarmos a página que exibe informações sobre o usuário de número 2. Devemos passar o parâmetro id com o valor 2. Como por exemplo:
+http://meusite.com.br/usuario?id=2COPIAR CÓDIGO
+Uma outra forma de fazer seria passar os valores na própria URL! Acompanhe o exemplo:
+
+http://meusite.com.br/usuario/2COPIAR CÓDIGO
+Mas tem um probleminha, não estamos dizendo explicitamente que o valor 2 realmente representa o id. Quando um parâmetro irá receber um certo valor, devemos combinar com o servidor (com o desenvolvedor da aplicação). Neste caso, foi combinado que o parâmetro recebido seria equivalente ao id passado antes.
+
+Vamos analisar um exemplo prático, em um serviço que retorna informações sobre um endereço de um determinado CEP? Acesse a URL: http://viacep.com.br/ws/04101300/json
+
+A resposta será todas as informações do CEP da Alura, como complemento, número e bairro, formatadas em JSON. Isso significa que foi combinado com o servidor, que o primeiro valor passado depois de ws deve ser o CEP e logo após, o formato em que os dados deverão chegar. No nosso caso, JSON. Tudo bem? :)
+
+Experimente agora trocar para o CEP de sua casa e para outro formato de dados, como por exemplo, XML.
+
+http://viacep.com.br/ws/04101300/json
+
+@@07
+Configurando o formato dos dados
+
+Transcrição
+
+Estamos com o projeto aberto no Postman, usando o endereço http://localhost:8000/livros no método get.
+Recapitulando: o formato das mensagens HTTP possuem um header e um corpo. Temos uma requisição preparada (get) para o back-end no recurso /livros. Clicando em "Send", temos como retorno um JSON com todos os livros disponíveis no back-end do AluraBooks.
+
+Mas como sabemos que é um JSON? Podemos confirmar qual a estrutura analisando os cabeçalhos do HTTP. Para isso, clicamos na seta apontando para baixo "∨" ao lado do "Body", vamos ter quatro opções:
+
+Body;
+cookies;
+headers;
+test results.
+Selecionamos "headers", e temos os cabeçalhos das respostas. Um desses cabeçalhos é chamado de Content-Type (em português, "tipo do conteúdo"), e analisando o valor dele temos application/json;charset=utf-8. Isso nos informa que é um JSON. A parte charset=utf-8 é para informar que esse JSON irá suportar caracteres com acentos, mas o importante é a parte que informa application/json.
+
+Voltando para o body, vamos supor o seguinte cenário: estamos trabalhando na empresa que está construindo o AluraBooks e fazemos parte do time de back-end. Precisamos compartilhar a API com a equipe do front-end, que vão precisar saber como acessar o recurso /livros ou qualquer outro recurso e como usar parâmetros para filtrar, etc.
+
+Como compartilhamos esse conhecimento? Com uma página hospedada na nossa própria API. Vamos concordar que não faz sentido ser uma página em formato JSON porque ele é feito para a máquina ler.
+
+Primeiro, precisamos criar uma nova rota, uma possibilidade de acessarmos a parte com a documentação. Posteriormente, desejamos que quando uma pessoa acessar esse novo caminho da URL, que esse código seja renderizado como um HTML para que humanos consigam ler. Faremos justamente isso.
+
+No VS Code, no final do arquivo server.js para adicionarmos uma nova rota para a URL do HTTP. Deixamos um trecho pronto para você só copiar e colar com esse novo caminho.
+
+Trecho de código com o caminho usado pelo instrutor
+server.get('/public/docs', (req, res) => {
+  const meuHtml = `
+     <h1>Documentação da API</h1>
+     <ul>
+            <li>GET /livros</li>
+            <li>POST /livros</li>
+            <li>GET /categorias</li>
+     </ul>
+    `
+    res.status(200).contentType("text/plain").send(meuHtml)
+})COPIAR CÓDIGO
+Após copiar, basta colar antes do server.use(router) no final do arquivo.
+
+server.js
+// código omitido
+
+server.get('/public/docs', (req, res) => {
+  const meuHtml = `
+     <h1>Documentação da API</h1>
+     <ul>
+            <li>GET /livros</li>
+            <li>POST /livros</li>
+            <li>GET /categorias</li>
+     </ul>
+    `
+    res.status(200).contentType("text/plain").send(meuHtml)
+})
+
+server.use(router)
+
+server.listen(8000, () => {
+  console.log("API disponível em http://localhost:8000")
+})COPIAR CÓDIGO
+Temos um servidor que quando recebe o método get na URL com o caminho /public/docs executa o que está dentro da função. No conteúdo dessa função, temos uma variável chamada de meuHtml que possui um cabeçalho com o título "Documentação da API" e uma lista com três elementos.
+
+Ou seja, vamos informar a pessoa que estiver lendo que há três rotas principais: GET /livros, POST /livros e GET /categorias. E salvamos esse conteúdo da função na variável meuHtml. Na última linha da função, temos a variável res de response (resposta), onde setamos a resposta para o status 200 e como não desejamos que seja um JSON colocamos o tipo do conteúdo (contentType) como texto, e por fim, enviamos o meuHtml.
+
+Com isso, o meuHtml será o corpo da mensagem HTTP que será enviado como resposta. Teclamos "Ctrl + S" para salvar, e vamos ao terminal onde teclamos "Ctrl + C" para parar a aplicação, e depois rodamos o seguinte comando:
+
+npm run start-authCOPIAR CÓDIGO
+Ao teclarmos "Enter", obtemos:
+
+json-server-api@1.0.0 start-auth
+node server.js
+
+API disponível em http://localhost:8000
+
+Aparentemente deu certo, e a API está disponível.
+
+Vamos verificar pelo Postman se conseguimos realizar uma requisição para a URL http://localhost:8000/public/docs.
+
+http://localhost:8000/public/docsCOPIAR CÓDIGO
+Logo após, clicamos no botão "Send". Como retorno no corpo da resposta, obtemos:
+
+     <h1>Documentação da API</h1>
+     <ul>
+            <li>GET /livros</li>
+            <li>POST /livros</li>
+            <li>GET /categorias</li>
+     </ul>COPIAR CÓDIGO
+Clicando na seta ao lado da palavra "Body" e depois em "Headers" para visualizarmos os cabeçalhos. Na primeira coluna temos o content type como sendo um text/plain (segunda coluna), exatamente como determinamos no JavaScript.
+
+Para verificar se funciona, acessamos o navegador no endereço localhost:8000/public/docs e teclamos "Enter". Como retorno, teremos:
+
+     <h1>Documentação da API</h1>
+     <ul>
+            <li>GET /livros</li>
+            <li>POST /livros</li>
+            <li>GET /categorias</li>
+     </ul>COPIAR CÓDIGO
+A mesma estrutura HTML crua que tivemos como retorno no Postman. Por algum motivo, o navegador não está entendendo que esse texto é um HTML. Precisamos especificar melhor, parece que apenas informar que não é um JSON não é o suficiente.
+
+Voltando ao código, ao invés de colocarmos o contentType() para texto plano, colocamos para text/html. Assim informamos de forma explícita para o navegador que o conteúdo enviado é um HTML.
+
+server.js
+// código omitido
+
+server.get('/public/docs', (req, res) => {
+  const meuHtml = `
+     <h1>Documentação da API</h1>
+     <ul>
+            <li>GET /livros</li>
+            <li>POST /livros</li>
+            <li>GET /categorias</li>
+     </ul>
+    `
+    res.status(200).contentType("text/html").send(meuHtml)
+})
+
+// código omitidoCOPIAR CÓDIGO
+Salvamos essa alteração e no terminal digitamos "Ctrl + C" para parar a aplicação. Logo após, rodamos npm run start-auth novamente.
+
+Voltando ao Postman, clicamos em "Send" para testar. Observe que agora temos o nosso content type como text/html. Logo após conferir isso, podemos ir no navegador e atualizar a página.
+
+Há situações que não irão funcionar mesmo atualizando, porque há um cache no navegador. Para arrumar isso, basta teclar "Ctrl + Shift + R".
+Observe que agora temos o título "Documentação da API" e abaixo listado os três caminhos principais:
+
+Documentação da API
+GET/livros
+POST/livros
+GET/categorias
+Com o content type certo, informamos ao navegador em qual formato desejamos visualizar o conteúdo da página.
+
+Formato dos dados
+Em suma, o formato dos dados é determinado pelo cabeçalho Content-Type (formato do corpo da mensagem), que segue uma regra definida. Há um outro cabeçalho chamado de Accept (utilizado na requisição), usado quando um cliente deseja informar um servidor que quer a resposta em um formato específico. Se desejamos em JSON, por exemplo, informamos que aceitamos uma resposta no formato application/json.
+
+Com isso, finalizamos mais uma aula do curso de HTTP.
+
+@@08
+Sobre o formato
+
+O protocolo HTTP envia dados em texto puro e já estudamos sobre as implicações disso em questões de segurança. Vimos inclusive como o HTTPS lida com isso.
+Em alguns momentos se faz necessário avisar na própria requisição um formato específico esperado para a resposta.
+
+De que forma podemos especificar o formato que esperamos que seja devolvido?
+
+Somente por um parâmetro na requisição já que o HTTP não lida com formatos específicos além de texto. Exemplo: /restaurantes?format=json.
+ 
+Especificar como parâmetro na requisição é até usado em alguns serviços, embora existe sim como definir via cabeçalho HTTP esse formato.
+Alternativa incorreta
+Pelo cabeçalho Accept-Language.
+ 
+Accept-Language é um cabeçalho que podemos usar para definir a linguagem usada.
+Alternativa incorreta
+Pelo cabeçalho Accept-Type.
+ 
+Accept-Type não é um cabeçalho válido para o HTTP.
+Alternativa incorreta
+Pelo cabeçalho Accept.
+ 
+Através dele podemos usar algum formato específico como:
+Accept: text/html, Accept: text/css, Accept: application/xml, Accept: application/json, Accept:image/jpeg e Accept: image/*COPIAR CÓDIGO
+Ou até mesmo não definir nenhum formato específico colocando:
+Accept: */*COPIAR CÓDIGO
+Alternativa incorreta
+Pelo cabeçalho Content-Type.
+ 
+O cabeçalho Content-Type, como o próprio nome sugere, traz informações sobre o tipo de conteúdo que está sendo trafegado. Logo se formos enviar através do HTTP um conteúdo JSON podemos especificar isso através dele. Ele, portanto, não tem relação com o formato esperado na resposta.
+
+@@09
+O que aprendemos?
+
+Nessa aula, você a aprendeu a:
+Especificar parâmetros com GET através dos Query Params;
+Especificar parâmetros com POST através de informações no corpo da requisição;
+Criar uma rota de documentação no AluraBooks, servindo HTML ao invés de JSON. Para isso, aprendemos:
+Como informar o formato do conteúdo no corpo de uma mensagem HTTP, através do cabeçalho Content-Type;
+Como indicar o formato esperado da resposta, através do cabeçalho Accept.
